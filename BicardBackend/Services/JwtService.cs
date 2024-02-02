@@ -28,8 +28,8 @@ namespace BicardBackend.Services
             // Retrieve additional claims from the IdentityUser
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName),
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new(ClaimTypes.Name, user.UserName),
                 // Include additional claims as needed
             };
 

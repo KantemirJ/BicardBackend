@@ -13,7 +13,7 @@ namespace BicardBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20240202160829_initial")]
-    partial class initial
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

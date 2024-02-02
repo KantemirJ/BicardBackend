@@ -1,11 +1,10 @@
 ﻿using BicardBackend.Data;
-//using BicardBackend.Migrations;
-using BicardBackend.Models;
 using BicardBackend.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Bicard.Controllers
 {
@@ -31,12 +30,12 @@ namespace Bicard.Controllers
             {
                 await _context.Appointments.AddAsync(model);
                 await _context.SaveChangesAsync();
-                _logger.LogInformation($"Appointment with id {model.Id} created.");
+                
                 return Ok();
             }
             catch (Exception ex)
             {
-                _logger.LogInformation(ex.Message);
+                _logger.LogWarning("Create appointment exeption: {FirstName}", ex.Message);
                 return StatusCode(500);
             }
         }

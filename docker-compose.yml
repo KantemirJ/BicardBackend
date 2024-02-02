@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  bicardbackend:
+    image: ${DOCKER_REGISTRY-}bicardbackend
+    build:
+      context: .
+      dockerfile: BicardBackend/Dockerfile
