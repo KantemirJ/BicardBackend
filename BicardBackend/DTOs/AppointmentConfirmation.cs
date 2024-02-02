@@ -1,6 +1,6 @@
-﻿namespace BicardBackend.Models
+﻿namespace BicardBackend.DTOs
 {
-    public class AppointmentConfirmationModel
+    public class AppointmentConfirmation
     {
         public int Id { get; set; }
         public string TimeAtSchedule { get; set; }

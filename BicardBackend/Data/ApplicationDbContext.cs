@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using BicardBackend.Models;
 
 namespace BicardBackend.Data
 {
@@ -11,5 +12,6 @@ namespace BicardBackend.Data
         }
 
         public DbSet<Appointment> Appointments { get; set; }
+        public DbSet<Doctor> Doctors { get; set; }
     }
 }

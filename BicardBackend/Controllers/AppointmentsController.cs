@@ -1,4 +1,5 @@
 ﻿using BicardBackend.Data;
+using BicardBackend.DTOs;
 using BicardBackend.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -48,7 +49,7 @@ namespace Bicard.Controllers
         }
         [HttpPut("ConfirmAppointment")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> ConfirmAppointment(AppointmentConfirmationModel model)
+        public async Task<IActionResult> ConfirmAppointment(AppointmentConfirmation model)
         {
             var appointment = await _context.Appointments.SingleOrDefaultAsync(x => x.Id == model.Id);
             if (appointment == null)

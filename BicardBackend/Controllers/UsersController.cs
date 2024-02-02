@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using BicardBackend.Models;
-using BicardBackend.Data;
 using BicardBackend.Services;
+using BicardBackend.DTOs;
+using BicardBackend.Models;
 
 namespace BicardBackend.Controllers
 {
@@ -23,7 +23,7 @@ namespace BicardBackend.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegistrationModel model)
+        public async Task<IActionResult> Register([FromBody] Registration model)
         {
             var user = new User { UserName = model.UserName, Email = model.Email };
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -39,7 +39,7 @@ namespace BicardBackend.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        public async Task<IActionResult> Login([FromBody] Login model)
         {
             var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
 

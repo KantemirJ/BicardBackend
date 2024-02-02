@@ -8,6 +8,9 @@ using BicardBackend.Services;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
+using AutoMapper;
+using BicardBackend.Models;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +21,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
 {
 }));
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Bicard API", Version = "v1" });
@@ -91,8 +95,10 @@ builder.Services.AddAuthentication(options =>
         //};
     });
 builder.Services.AddScoped<IJwtService, JwtService>();
-
+builder.Services.AddSingleton<IWebHostEnvironment>(builder.Environment);
+builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddAuthorization();
+builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 

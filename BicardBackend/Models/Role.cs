@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace BicardBackend.Data
+namespace BicardBackend.Models
 {
     public class Role : IdentityRole<int>
     {

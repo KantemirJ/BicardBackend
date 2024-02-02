@@ -1,6 +1,6 @@
-﻿namespace BicardBackend.Models
+﻿namespace BicardBackend.DTOs
 {
-    public class RegistrationModel
+    public class Registration
     {
         public string UserName { get; set; }
         public string Email { get; set; }

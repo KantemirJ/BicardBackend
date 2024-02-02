@@ -1,4 +1,4 @@
-﻿namespace BicardBackend.Data
+﻿namespace BicardBackend.Models
 {
     public class Appointment
     {
