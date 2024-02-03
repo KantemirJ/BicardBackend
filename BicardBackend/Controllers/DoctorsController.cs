@@ -29,7 +29,26 @@ namespace BicardBackend.Controllers
         public async Task<IActionResult> GetListOfDoctors()
         {
             var listOfDoctors = await _context.Doctors.ToListAsync();
-            return Ok(listOfDoctors);
+            List<DoctorDtoToFront> listOfDoctorsDtoToFront = new();
+            foreach (var doctor in listOfDoctors)
+            {
+                DoctorDtoToFront doctorDtoToFront = new()
+                {
+                    Id = doctor.Id,
+                    Name = doctor.Name,
+                    Speciality = doctor.Speciality,
+                    Bio = doctor.Bio,
+                    Education = doctor.Education,
+                    Experience = doctor.Experience,
+                    PhotoBase64 = await _fileService.ConvertFileToBase64(doctor.PathToPhoto),
+                    PhoneNumber = doctor.PhoneNumber,
+                    Email = doctor.Email,
+                    Address = doctor.Address,
+                    UserId = doctor.UserId,
+                };
+                listOfDoctorsDtoToFront.Add(doctorDtoToFront);
+            }
+            return Ok(listOfDoctorsDtoToFront);
         }
         [HttpGet("GetDoctorById")]
         public async Task<IActionResult> GetDoctorById(int id)
@@ -39,6 +58,21 @@ namespace BicardBackend.Controllers
             {
                 return NotFound();
             }
+            DoctorDtoToFront doctorDtoToFront = new() 
+            {
+                Id = id,
+                Name = doctor.Name,
+                Speciality = doctor.Speciality,
+                Bio = doctor.Bio,
+                Education = doctor.Education,
+                Experience = doctor.Experience,
+                PhotoBase64 = await _fileService.ConvertFileToBase64(doctor.PathToPhoto),
+                PhoneNumber = doctor.PhoneNumber,
+                Email = doctor.Email,
+                Address = doctor.Address,
+                UserId = doctor.UserId,
+            };
+
             return Ok(doctor);
         }
         [HttpPost("Create")]
@@ -52,7 +86,6 @@ namespace BicardBackend.Controllers
             //var doctor = _mapper.Map<Doctor>(doctorDto);
             Doctor doctor = new() 
             {
-                Id = doctorDto.Id,
                 Name = doctorDto.Name,
                 Speciality = doctorDto.Speciality,
                 Bio = doctorDto.Bio,
@@ -71,12 +104,12 @@ namespace BicardBackend.Controllers
         }
         [HttpPut("Update")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> Update([FromBody] DoctorDto doctorDto)
+        public async Task<IActionResult> Update([FromBody] DoctorDto doctorDto, int id)
         {
             //var doctor = _mapper.Map<Doctor>(doctorDto);
             Doctor doctor = new()
             {
-                Id = doctorDto.Id,
+                Id = id,
                 Name = doctorDto.Name,
                 Speciality = doctorDto.Speciality,
                 Bio = doctorDto.Bio,

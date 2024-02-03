@@ -42,6 +42,25 @@ namespace BicardBackend.Services
             // Return the full path of the saved file
             return filePath;
         }
+        public async Task<string> ConvertFileToBase64(string filePath)
+        {
+            try
+            {
+                // Read the file content
+                byte[] fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+
+                // Convert the file content to base64 string
+                string base64String = Convert.ToBase64String(fileBytes);
+
+                return base64String;
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions, log, or return an error
+                Console.WriteLine($"Error converting file to base64: {ex.Message}");
+                return null;
+            }
+        }
     }
 
 }
