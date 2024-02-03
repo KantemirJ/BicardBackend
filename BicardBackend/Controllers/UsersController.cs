@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using BicardBackend.Services;
 using BicardBackend.DTOs;
 using BicardBackend.Models;
+using Microsoft.EntityFrameworkCore;
+using BicardBackend.Data;
 
 namespace BicardBackend.Controllers
 {
@@ -14,12 +16,14 @@ namespace BicardBackend.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IJwtService _jwtService;
+        private readonly ApplicationDbContext _context;
 
-        public UsersController(UserManager<User> userManager, SignInManager<User> signInManager, IJwtService jwtService)
+        public UsersController(UserManager<User> userManager, SignInManager<User> signInManager, IJwtService jwtService, ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _jwtService = jwtService;
+            _context = context;
         }
 
         [HttpPost("register")]
@@ -31,7 +35,7 @@ namespace BicardBackend.Controllers
             if (result.Succeeded)
             {
                 // You may customize the response based on your needs
-                await _userManager.AddToRoleAsync(user, "Patient");
+                //await _userManager.AddToRoleAsync(user, "Patient");
                 return Ok(new { Message = "User registered successfully" });
             }
 
@@ -55,9 +59,24 @@ namespace BicardBackend.Controllers
                 //    Secure = true,
                 //    MaxAge = TimeSpan.FromSeconds(120)
                 //});
+                // Get the user's roles from the UserRoles table
+                var roleIds = await _context.UserRoles
+                    .Where(ur => ur.UserId == user.Id)
+                    .Select(ur => ur.RoleId)
+                    .ToListAsync();
+
+                // Get the role names based on role IDs
+                var roleNames = await _context.Roles
+                    .Where(r => roleIds.Contains(r.Id))
+                    .Select(r => r.Name)
+                    .ToListAsync();
+
+                // For simplicity, assuming the user has only one role (modify as needed)
+                string roleName = roleNames.FirstOrDefault();
                 return Ok(new
                 {
                     userId = user.Id,
+                    roleName = roleName,
                     userName = user.UserName,
                     accessToken = accessToken.Result,
                     Message = "Login successful"
