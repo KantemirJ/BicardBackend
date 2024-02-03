@@ -2,6 +2,7 @@
 using BicardBackend.Data;
 using BicardBackend.DTOs;
 using BicardBackend.Models;
+using BicardBackend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,12 +16,14 @@ namespace BicardBackend.Controllers
     public class DoctorsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly IMapper _mapper;
+        //private readonly IMapper _mapper;
+        private readonly IFileService _fileService;
 
-        public DoctorsController(ApplicationDbContext context, IMapper mapper) 
+        public DoctorsController(ApplicationDbContext context, IMapper mapper, IFileService fileService) 
         {
             _context = context;
-            _mapper = mapper;
+            //_mapper = mapper;
+            _fileService = fileService;
         }
         [HttpGet("GetListOfDoctors")]
         public async Task<IActionResult> GetListOfDoctors()
@@ -40,13 +43,28 @@ namespace BicardBackend.Controllers
         }
         [HttpPost("Create")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> Create([FromBody] DoctorDto doctorDto)
+        public async Task<IActionResult> Create([FromForm] DoctorDto doctorDto)
         {
             if (doctorDto == null)
             {
                 return BadRequest("Invalid data");
             }
-            var doctor = _mapper.Map<Doctor>(doctorDto);
+            //var doctor = _mapper.Map<Doctor>(doctorDto);
+            Doctor doctor = new() 
+            {
+                Id = doctorDto.Id,
+                Name = doctorDto.Name,
+                Speciality = doctorDto.Speciality,
+                Bio = doctorDto.Bio,
+                Education = doctorDto.Education,
+                Experience = doctorDto.Experience,
+                PathToPhoto =  await _fileService.SaveFileAsync(doctorDto.Photo, "PhotosOfDoctors"),
+                PhoneNumber = doctorDto.PhoneNumber,
+                Email = doctorDto.Email,
+                Address = doctorDto.Address,
+                UserId = doctorDto.UserId,
+            };
+
             _context.Doctors.Add(doctor);
             await _context.SaveChangesAsync();
             return Ok("Doctor created successfully");
@@ -55,7 +73,21 @@ namespace BicardBackend.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> Update([FromBody] DoctorDto doctorDto)
         {
-            var doctor = _mapper.Map<Doctor>(doctorDto);
+            //var doctor = _mapper.Map<Doctor>(doctorDto);
+            Doctor doctor = new()
+            {
+                Id = doctorDto.Id,
+                Name = doctorDto.Name,
+                Speciality = doctorDto.Speciality,
+                Bio = doctorDto.Bio,
+                Education = doctorDto.Education,
+                Experience = doctorDto.Experience,
+                PathToPhoto = await _fileService.SaveFileAsync(doctorDto.Photo, "PhotosOfDoctors"),
+                PhoneNumber = doctorDto.PhoneNumber,
+                Email = doctorDto.Email,
+                Address = doctorDto.Address,
+                UserId = doctorDto.UserId,
+            };
             _context.Entry(doctor).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return Ok("Doctor updated successfully");

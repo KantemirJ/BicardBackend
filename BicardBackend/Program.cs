@@ -15,6 +15,8 @@ using Microsoft.Extensions.FileProviders;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -96,9 +98,7 @@ builder.Services.AddAuthentication(options =>
     });
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddSingleton<IWebHostEnvironment>(builder.Environment);
-builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddAuthorization();
-builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 

@@ -11,12 +11,18 @@ namespace BicardBackend.Profiles
         public MappingProfile(FileService fileService)
         {
             _fileService = fileService;
+
             CreateMap<DoctorDto, Doctor>()
-                .ForMember(dest => dest.PathToPhoto, opt => opt.MapFrom(src => src.Photo != null ? _fileService.SaveFileAsync(src.Photo, "PhotosOfDoctors") : null))
+                .ForMember(dest => dest.PathToPhoto, opt => opt.MapFrom(src => MapPhotoPath(src.Photo)))
                 // Add other mappings as needed
                 .ReverseMap();
 
             // Add more mappings for other DTOs and entities as needed
+        }
+
+        private string MapPhotoPath(IFormFile photo)
+        {
+            return photo != null ? _fileService.SaveFileAsync(photo, "PhotosOfDoctors").Result : null;
         }
         // Parameterless constructor added for AutoMapper
         public MappingProfile()
