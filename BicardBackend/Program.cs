@@ -54,7 +54,7 @@ builder.Services.AddSwaggerGen(c =>
 // Register configuration to enable dependency injection
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
 builder.Services.AddIdentity<User, Role>(options => {
     options.SignIn.RequireConfirmedAccount = false;
     options.User.RequireUniqueEmail = true;

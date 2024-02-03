@@ -18,5 +18,9 @@ namespace BicardBackend.Profiles
 
             // Add more mappings for other DTOs and entities as needed
         }
+        // Parameterless constructor added for AutoMapper
+        public MappingProfile()
+        {
+        }
     }
 }
