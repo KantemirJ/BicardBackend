@@ -13,5 +13,34 @@ namespace BicardBackend.Data
 
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Doctor> Doctors { get; set; }
+        public DbSet<MedService> Meds { get; set; }
+        public DbSet<SubMedService> Subs { get; set; }
+        public DbSet<SubMedServiceDoctor> SubsDoctors { get;set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<SubMedServiceDoctor>()
+                .HasKey(s => new { s.DoctorId, s.SubMedServiceId });
+
+            // Other configurations...
+
+            modelBuilder.Entity<SubMedServiceDoctor>()
+                .HasOne(sd => sd.Doctor)
+                .WithMany(d => d.SubMedServiceDoctors)
+                .HasForeignKey(sd => sd.DoctorId);
+
+            modelBuilder.Entity<SubMedServiceDoctor>()
+                .HasOne(sd => sd.SubMedService)
+                .WithMany(sm => sm.SubMedServiceDoctors)
+                .HasForeignKey(sd => sd.SubMedServiceId);
+
+            modelBuilder.Entity<SubMedService>()
+            .HasOne(b => b.MedService)
+            .WithMany(a => a.SubMedServices)
+            .HasForeignKey(b => b.MedServiceId);
+        }
+
     }
 }

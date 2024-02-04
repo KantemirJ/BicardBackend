@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace BicardBackend.Controllers
 {
@@ -30,25 +31,28 @@ namespace BicardBackend.Controllers
         {
             var listOfDoctors = await _context.Doctors.ToListAsync();
             List<DoctorDtoToFront> listOfDoctorsDtoToFront = new();
-            foreach (var doctor in listOfDoctors)
+            var listOfDoctorsDto = listOfDoctors.Select(async doctor =>
             {
-                DoctorDtoToFront doctorDtoToFront = new()
+                return new
                 {
-                    Id = doctor.Id,
-                    Name = doctor.Name,
-                    Speciality = doctor.Speciality,
-                    Bio = doctor.Bio,
-                    Education = doctor.Education,
-                    Experience = doctor.Experience,
+                    doctor.Id,
+                    doctor.Name,
+                    doctor.Speciality,
+                    doctor.Bio,
+                    doctor.Education,
+                    doctor.Experience,
                     PhotoBase64 = await _fileService.ConvertFileToBase64(doctor.PathToPhoto),
-                    PhoneNumber = doctor.PhoneNumber,
-                    Email = doctor.Email,
-                    Address = doctor.Address,
-                    UserId = doctor.UserId,
+                    doctor.PhoneNumber,
+                    doctor.Email,
+                    doctor.Address,
+                    doctor.UserId,
                 };
-                listOfDoctorsDtoToFront.Add(doctorDtoToFront);
-            }
-            return Ok(listOfDoctorsDtoToFront);
+            });
+
+            // Wait for all async operations to complete
+            var result = await Task.WhenAll(listOfDoctorsDto);
+
+            return Ok(result);
         }
         [HttpGet("GetDoctorById")]
         public async Task<IActionResult> GetDoctorById(int id)
@@ -73,7 +77,7 @@ namespace BicardBackend.Controllers
                 UserId = doctor.UserId,
             };
 
-            return Ok(doctor);
+            return Ok(doctorDtoToFront);
         }
         [HttpPost("Create")]
         [Consumes("multipart/form-data")]

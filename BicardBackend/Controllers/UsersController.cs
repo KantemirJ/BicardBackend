@@ -15,13 +15,15 @@ namespace BicardBackend.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly RoleManager<Role> _roleManager;
         private readonly IJwtService _jwtService;
         private readonly ApplicationDbContext _context;
 
-        public UsersController(UserManager<User> userManager, SignInManager<User> signInManager, IJwtService jwtService, ApplicationDbContext context)
+        public UsersController(UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<Role> roleManager, IJwtService jwtService, ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
             _jwtService = jwtService;
             _context = context;
         }
@@ -95,6 +97,26 @@ namespace BicardBackend.Controllers
             }
             await _userManager.DeleteAsync(user);
             return Ok("Deleted successfully.");
+        }
+        [HttpGet("GetUsersByRole")]
+        public async Task<IActionResult> GetUsersByRole(string role)
+        {
+            // Check if the "Admin" role exists, and create it if not
+            if (!await _roleManager.RoleExistsAsync(role))
+            {
+                return BadRequest("Role '" + role + "' does not exist.");
+            }
+
+            // Retrieve users with the "Admin" role and select only UserName and Id
+            var list = await _userManager.GetUsersInRoleAsync(role);
+
+            // Project the results to include only UserName and Id
+            var DtoList = list.Select(user => new
+            {
+                Id = user.Id,
+                UserName = user.UserName
+            }).ToList();
+            return Ok(DtoList);
         }
     }
 }

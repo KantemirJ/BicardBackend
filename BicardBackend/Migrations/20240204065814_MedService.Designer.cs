@@ -3,6 +3,7 @@ using System;
 using BicardBackend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BicardBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240204065814_MedService")]
+    partial class MedService
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -176,9 +178,6 @@ namespace BicardBackend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("MedServiceId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -188,8 +187,6 @@ namespace BicardBackend.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MedServiceId");
 
                     b.ToTable("Subs");
                 });
@@ -379,17 +376,6 @@ namespace BicardBackend.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BicardBackend.Models.SubMedService", b =>
-                {
-                    b.HasOne("BicardBackend.Models.MedService", "MedService")
-                        .WithMany("SubMedServices")
-                        .HasForeignKey("MedServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("MedService");
-                });
-
             modelBuilder.Entity("BicardBackend.Models.SubMedServiceDoctor", b =>
                 {
                     b.HasOne("BicardBackend.Models.Doctor", "Doctor")
@@ -463,11 +449,6 @@ namespace BicardBackend.Migrations
             modelBuilder.Entity("BicardBackend.Models.Doctor", b =>
                 {
                     b.Navigation("SubMedServiceDoctors");
-                });
-
-            modelBuilder.Entity("BicardBackend.Models.MedService", b =>
-                {
-                    b.Navigation("SubMedServices");
                 });
 
             modelBuilder.Entity("BicardBackend.Models.SubMedService", b =>
