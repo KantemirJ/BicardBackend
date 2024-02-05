@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using BicardBackend.Models;
+using BicardBackend.Data;
+using BicardBackend.DTOs;
 
 namespace BicardBackend.Controllers
 {
@@ -11,11 +13,13 @@ namespace BicardBackend.Controllers
     {
         private readonly RoleManager<Role> _roleManager;
         private readonly UserManager<User> _userManager;
+        private readonly ApplicationDbContext _context;
 
-        public RolesController(RoleManager<Role> roleManager, UserManager<User> userManager)
+        public RolesController(RoleManager<Role> roleManager, UserManager<User> userManager, ApplicationDbContext context)
         {
             _roleManager = roleManager;
             _userManager = userManager;
+            _context = context;
         }
         [HttpPost("AssignRole")]
         public async Task<IActionResult> AssignRole(string userName, string roleName)
@@ -32,7 +36,12 @@ namespace BicardBackend.Controllers
                     // If the role doesn't exist, you may want to create it
                     return BadRequest($"Role \"{roleName}\" not found.");
                 }
-
+                if (roleName == "Doctor")
+                {
+                    Doctor doctor = new() { UserId = user.Id};
+                    _context.Doctors.Add(doctor);
+                    await _context.SaveChangesAsync();
+                }
                 // Assign the user to the role
                 await _userManager.AddToRoleAsync(user, roleName);
             }
