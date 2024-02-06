@@ -108,7 +108,7 @@ namespace BicardBackend.Controllers
         }
         [HttpPut("Update")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> Update([FromBody] DoctorDto doctorDto, int id)
+        public async Task<IActionResult> Update([FromForm] DoctorDto doctorDto, int id)
         {
             //var doctor = _mapper.Map<Doctor>(doctorDto);
             Doctor doctor = new()
