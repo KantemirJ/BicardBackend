@@ -1,16 +1,13 @@
-﻿namespace BicardBackend.Models
+﻿namespace BicardBackend.DTOs
 {
-    public class Appointment
+    public class AppointmentDto
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
         public int SubMedServiceId { get; set; }
         public int DoctorId { get; set; }
         public string Age { get; set; }
-        public bool IsConfirmed { get; set; } = false;
         public string TimeAtSchedule { get; set; }
-        public DateTime TimeStamp { get; set; } = DateTime.UtcNow;
     }
 }

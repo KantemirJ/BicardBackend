@@ -21,7 +21,7 @@ namespace Bicard.Controllers
             _logger = logger;
         }
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(Appointment model)
+        public async Task<IActionResult> Create(AppointmentDto model)
         {
             if (!ModelState.IsValid)
             {
@@ -29,41 +29,50 @@ namespace Bicard.Controllers
             }
             try
             {
-                await _context.Appointments.AddAsync(model);
+                var appointment = new Appointment()
+                {
+                    Name = model.Name,
+                    Email = model.Email,
+                    PhoneNumber = model.PhoneNumber,
+                    SubMedServiceId = model.SubMedServiceId,
+                    DoctorId = model.DoctorId,
+                    Age = model.Age,
+                    TimeAtSchedule = model.TimeAtSchedule
+                };
+                await _context.Appointments.AddAsync(appointment);
                 await _context.SaveChangesAsync();
                 
                 return Ok();
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("Create appointment exeption: {FirstName}", ex.Message);
+                _logger.LogWarning("Exception message:", ex.Message);
                 return StatusCode(500);
             }
         }
         [HttpGet("GetListOfAppointments")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetListOfAppointments()
         {
             var list = await _context.Appointments.ToListAsync();
             return Ok(list);
         }
         [HttpPut("ConfirmAppointment")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> ConfirmAppointment(AppointmentConfirmation model)
+        //[Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ConfirmAppointment(int id, string timeAt)
         {
-            var appointment = await _context.Appointments.SingleOrDefaultAsync(x => x.Id == model.Id);
+            var appointment = await _context.Appointments.SingleOrDefaultAsync(x => x.Id == id);
             if (appointment == null)
             {
                 return NotFound();
             }
             appointment.IsConfirmed = true;
-            appointment.TimeAtSchedule = model.TimeAtSchedule;
-            appointment.ConfirmedByUserId = model.ConfirmedByUserId;
+            appointment.TimeAtSchedule = timeAt;
             await _context.SaveChangesAsync();
             return Ok("Appointment confirmed successfully.");
         }
         [HttpDelete("Cancel")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> Cancel(int id)
         {
             var appointment = new Appointment { Id = id
