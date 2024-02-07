@@ -16,6 +16,7 @@ namespace BicardBackend.Data
         public DbSet<MedService> Meds { get; set; }
         public DbSet<SubMedService> Subs { get; set; }
         public DbSet<SubMedServiceDoctor> SubsDoctors { get;set; }
+        public DbSet<Feedback> Feedbacks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -40,6 +41,14 @@ namespace BicardBackend.Data
             .HasOne(b => b.MedService)
             .WithMany(a => a.SubMedServices)
             .HasForeignKey(b => b.MedServiceId);
+            modelBuilder.Entity<Feedback>()
+            .HasOne(b => b.User)
+            .WithMany(a => a.Feedbacks)
+            .HasForeignKey(b => b.UserId);
+            modelBuilder.Entity<Feedback>()
+            .HasOne(b => b.Doctor)
+            .WithMany(a => a.Feedbacks)
+            .HasForeignKey(b => b.DoctorId);
         }
 
     }
