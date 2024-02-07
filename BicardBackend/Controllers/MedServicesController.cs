@@ -83,12 +83,12 @@ namespace BicardBackend.Controllers
             return BadRequest("Model state is invalid.");
         }
         [HttpPut("UpdateMedService")]
-        public async Task<IActionResult> UpdateMedService(MedService model)
+        public async Task<IActionResult> UpdateMedService(int id, MedServiceDto model)
         {
             if (ModelState.IsValid)
             {
                 // Step 1: Find the existing entity by its ID
-                var medService = await _context.Meds.FindAsync(model.Id);
+                var medService = await _context.Meds.FindAsync(id);
 
                 if (medService == null)
                 {
@@ -113,12 +113,12 @@ namespace BicardBackend.Controllers
             return BadRequest("Model state is invalid.");
         }
         [HttpPut("UpdateSubMedService")]
-        public async Task<IActionResult> UpdateSubMedService(SubMedService model)
+        public async Task<IActionResult> UpdateSubMedService(int id, SubMedServiceDto model)
         {
             if (ModelState.IsValid)
             {
                 // Step 1: Find the existing entity by its ID
-                var subMedService = await _context.Subs.FindAsync(model.Id);
+                var subMedService = await _context.Subs.FindAsync(id);
 
                 if (subMedService == null)
                 {
