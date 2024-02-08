@@ -30,7 +30,7 @@ namespace BicardBackend.Controllers
         public async Task<IActionResult> GetListOfDoctors()
         {
             var listOfDoctors = await _context.Doctors.ToListAsync();
-            List<DoctorDtoToFront> listOfDoctorsDtoToFront = new();
+
             var listOfDoctorsDto = listOfDoctors.Select(async doctor =>
             {
                 return new
@@ -62,22 +62,22 @@ namespace BicardBackend.Controllers
             {
                 return NotFound();
             }
-            DoctorDtoToFront doctorDtoToFront = new() 
+            var model = new 
             {
                 Id = id,
-                Name = doctor.Name,
-                Speciality = doctor.Speciality,
-                Bio = doctor.Bio,
-                Education = doctor.Education,
-                Experience = doctor.Experience,
+                doctor.Name,
+                doctor.Speciality,
+                doctor.Bio,
+                doctor.Education,
+                doctor.Experience,
                 PhotoBase64 = await _fileService.ConvertFileToBase64(doctor.PathToPhoto),
-                PhoneNumber = doctor.PhoneNumber,
-                Email = doctor.Email,
-                Address = doctor.Address,
-                UserId = doctor.UserId,
-            };
+                doctor.PhoneNumber,
+                doctor.Email,
+                doctor.Address,
+                doctor.UserId,
+            };  
 
-            return Ok(doctorDtoToFront);
+            return Ok(model);
         }
         [HttpPost("Create")]
         [Consumes("multipart/form-data")]
