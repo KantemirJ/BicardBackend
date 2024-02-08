@@ -42,10 +42,17 @@ namespace BicardBackend.Controllers
             var list = _context.Meds.ToList();
             return Ok(list);
         }
-        [HttpGet("GetListOfSubMedServices")]
+        [HttpGet("GetListOfSubMedServices/{medServiceId}")]
         public async Task<IActionResult> GetListOfSubMedServices(int medServiceId)
         {
             var list = _context.Subs.Where(s => s.MedServiceId == medServiceId).ToList();
+            return Ok(list);
+        }
+        [HttpGet("GetListOfAllSubMedServices")]
+        public async Task<IActionResult> GetListOfAllSubMedServices()
+        {
+            var list = await _context.Subs
+                .ToListAsync();
             return Ok(list);
         }
         [HttpPost("CreateMedService")]
