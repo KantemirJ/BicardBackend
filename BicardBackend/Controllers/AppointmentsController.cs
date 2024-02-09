@@ -57,17 +57,23 @@ namespace Bicard.Controllers
             var list = await _context.Appointments.ToListAsync();
             return Ok(list);
         }
-        [HttpPut("ConfirmAppointment")]
+        [HttpPut("ConfirmAppointment/{id}")]
         //[Authorize(Roles = "Admin")]
-        public async Task<IActionResult> ConfirmAppointment(int id, string timeAt)
+        public async Task<IActionResult> ConfirmAppointment(int id, AppointmentDto model)
         {
             var appointment = await _context.Appointments.SingleOrDefaultAsync(x => x.Id == id);
             if (appointment == null)
             {
                 return NotFound();
             }
+            appointment.Name = model.Name;
+            appointment.Email = model.Email;
+            appointment.PhoneNumber = model.PhoneNumber;
+            appointment.Age = model.Age;
+            appointment.TimeAtSchedule = model.TimeAtSchedule;
+            appointment.SubMedServiceId = model.SubMedServiceId;
+            appointment.DoctorId = model.DoctorId;
             appointment.IsConfirmed = true;
-            appointment.TimeAtSchedule = timeAt;
             await _context.SaveChangesAsync();
             return Ok("Appointment confirmed successfully.");
         }
