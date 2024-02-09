@@ -36,12 +36,12 @@ namespace BicardBackend.Controllers
                     // If the role doesn't exist, you may want to create it
                     return BadRequest($"Role \"{roleName}\" not found.");
                 }
-                if (roleName == "Doctor")
-                {
-                    Doctor doctor = new() { UserId = user.Id};
-                    _context.Doctors.Add(doctor);
-                    await _context.SaveChangesAsync();
-                }
+                //if (roleName == "Doctor")
+                //{
+                //    Doctor doctor = new() { UserId = user.Id};
+                //    _context.Doctors.Add(doctor);
+                //    await _context.SaveChangesAsync();
+                //}
                 // Assign the user to the role
                 await _userManager.AddToRoleAsync(user, roleName);
             }
