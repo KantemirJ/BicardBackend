@@ -1,6 +1,7 @@
 ﻿using BicardBackend.Data;
 using BicardBackend.DTOs;
 using BicardBackend.Models;
+using BicardBackend.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,9 +13,11 @@ namespace BicardBackend.Controllers
     public class MedServicesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        public MedServicesController(ApplicationDbContext context)
+        private readonly IFileService _fileService;
+        public MedServicesController(ApplicationDbContext context, IFileService fileService)
         {
             _context = context;
+            _fileService = fileService;
         }
         [HttpGet("GetMedServiceById/{id}")]
         public async Task<IActionResult> GetMedServiceById(int id)
@@ -56,7 +59,7 @@ namespace BicardBackend.Controllers
             return Ok(list);
         }
         [HttpPost("CreateMedService")]
-        public async Task<IActionResult> CreateMedService(MedServiceDto dto)
+        public async Task<IActionResult> CreateMedService([FromForm] MedServiceDto dto)
         {
             if (ModelState.IsValid)
             {
@@ -66,7 +69,20 @@ namespace BicardBackend.Controllers
                     ShortDescription = dto.ShortDescription,
                     LongDescription = dto.LongDescription
                 };
+                
                 await _context.Meds.AddAsync(model);
+                await _context.SaveChangesAsync();
+                foreach (IFormFile fileDto in dto.Files)
+                {
+                    var file = new Models.File()
+                    {
+                        Name = await _fileService.SaveFileAsync(fileDto, "MedServicesFiles"),
+                        Extention = Path.GetExtension(fileDto.FileName),
+                        Size = fileDto.Length/1024.0,
+                        MedServiceId = model.Id
+                    };
+                    await _context.Files.AddAsync(file);
+                }
                 await _context.SaveChangesAsync();
                 return Ok("MedService created.");
             }

@@ -17,6 +17,8 @@ namespace BicardBackend.Data
         public DbSet<SubMedService> Subs { get; set; }
         public DbSet<SubMedServiceDoctor> SubsDoctors { get;set; }
         public DbSet<Feedback> Feedbacks { get; set; }
+        public DbSet<Models.DayOfWeek> DayOfWeeks { get; set; }
+        public DbSet<Models.File> Files { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
