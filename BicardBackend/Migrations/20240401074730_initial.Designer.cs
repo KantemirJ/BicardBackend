@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BicardBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240202165948_Doctors")]
-    partial class Doctors
+    [Migration("20240401074730_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,7 +24,7 @@ namespace BicardBackend.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("BicardBackend.Data.Appointment", b =>
+            modelBuilder.Entity("BicardBackend.Models.Appointment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -36,12 +36,8 @@ namespace BicardBackend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("ConfirmedByUserId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("DoctorName")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -58,11 +54,11 @@ namespace BicardBackend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ServiceType")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("SubMedServiceId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("TimeAtSchedule")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("TimeStamp")
@@ -70,10 +66,12 @@ namespace BicardBackend.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("SubMedServiceId");
+
                     b.ToTable("Appointments");
                 });
 
-            modelBuilder.Entity("BicardBackend.Data.Doctor", b =>
+            modelBuilder.Entity("BicardBackend.Models.Doctor", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -116,7 +114,105 @@ namespace BicardBackend.Migrations
                     b.ToTable("Doctors");
                 });
 
-            modelBuilder.Entity("BicardBackend.Data.Role", b =>
+            modelBuilder.Entity("BicardBackend.Models.Faq", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Answer")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Faqs");
+                });
+
+            modelBuilder.Entity("BicardBackend.Models.Feedback", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Feedbacks");
+                });
+
+            modelBuilder.Entity("BicardBackend.Models.File", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Extention")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("MedServiceId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<double>("Size")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Files");
+                });
+
+            modelBuilder.Entity("BicardBackend.Models.MedService", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("LongDescription")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ShortDescription")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Meds");
+                });
+
+            modelBuilder.Entity("BicardBackend.Models.Role", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -145,7 +241,77 @@ namespace BicardBackend.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("BicardBackend.Data.User", b =>
+            modelBuilder.Entity("BicardBackend.Models.Schedule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("EndTime")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("StartTime")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DoctorId");
+
+                    b.ToTable("Schedules");
+                });
+
+            modelBuilder.Entity("BicardBackend.Models.SubMedService", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("MedServiceId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Price")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MedServiceId");
+
+                    b.ToTable("Subs");
+                });
+
+            modelBuilder.Entity("BicardBackend.Models.SubMedServiceDoctor", b =>
+                {
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SubMedServiceId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("DoctorId", "SubMedServiceId");
+
+                    b.HasIndex("SubMedServiceId");
+
+                    b.ToTable("SubsDoctors");
+                });
+
+            modelBuilder.Entity("BicardBackend.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -315,9 +481,72 @@ namespace BicardBackend.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("BicardBackend.Models.Appointment", b =>
+                {
+                    b.HasOne("BicardBackend.Models.SubMedService", "SubMedService")
+                        .WithMany()
+                        .HasForeignKey("SubMedServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SubMedService");
+                });
+
+            modelBuilder.Entity("BicardBackend.Models.Feedback", b =>
+                {
+                    b.HasOne("BicardBackend.Models.User", "User")
+                        .WithMany("Feedbacks")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BicardBackend.Models.Schedule", b =>
+                {
+                    b.HasOne("BicardBackend.Models.Doctor", "Doctor")
+                        .WithMany("Schedules")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+                });
+
+            modelBuilder.Entity("BicardBackend.Models.SubMedService", b =>
+                {
+                    b.HasOne("BicardBackend.Models.MedService", "MedService")
+                        .WithMany("SubMedServices")
+                        .HasForeignKey("MedServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MedService");
+                });
+
+            modelBuilder.Entity("BicardBackend.Models.SubMedServiceDoctor", b =>
+                {
+                    b.HasOne("BicardBackend.Models.Doctor", "Doctor")
+                        .WithMany("SubMedServiceDoctors")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BicardBackend.Models.SubMedService", "SubMedService")
+                        .WithMany("SubMedServiceDoctors")
+                        .HasForeignKey("SubMedServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("SubMedService");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
-                    b.HasOne("BicardBackend.Data.Role", null)
+                    b.HasOne("BicardBackend.Models.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -326,7 +555,7 @@ namespace BicardBackend.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
-                    b.HasOne("BicardBackend.Data.User", null)
+                    b.HasOne("BicardBackend.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -335,7 +564,7 @@ namespace BicardBackend.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
-                    b.HasOne("BicardBackend.Data.User", null)
+                    b.HasOne("BicardBackend.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -344,13 +573,13 @@ namespace BicardBackend.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
                 {
-                    b.HasOne("BicardBackend.Data.Role", null)
+                    b.HasOne("BicardBackend.Models.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BicardBackend.Data.User", null)
+                    b.HasOne("BicardBackend.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -359,11 +588,33 @@ namespace BicardBackend.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
-                    b.HasOne("BicardBackend.Data.User", null)
+                    b.HasOne("BicardBackend.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BicardBackend.Models.Doctor", b =>
+                {
+                    b.Navigation("Schedules");
+
+                    b.Navigation("SubMedServiceDoctors");
+                });
+
+            modelBuilder.Entity("BicardBackend.Models.MedService", b =>
+                {
+                    b.Navigation("SubMedServices");
+                });
+
+            modelBuilder.Entity("BicardBackend.Models.SubMedService", b =>
+                {
+                    b.Navigation("SubMedServiceDoctors");
+                });
+
+            modelBuilder.Entity("BicardBackend.Models.User", b =>
+                {
+                    b.Navigation("Feedbacks");
                 });
 #pragma warning restore 612, 618
         }

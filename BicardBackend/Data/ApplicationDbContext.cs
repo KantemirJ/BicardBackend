@@ -17,8 +17,9 @@ namespace BicardBackend.Data
         public DbSet<SubMedService> Subs { get; set; }
         public DbSet<SubMedServiceDoctor> SubsDoctors { get;set; }
         public DbSet<Feedback> Feedbacks { get; set; }
-        public DbSet<Models.DayOfWeek> DayOfWeeks { get; set; }
+        public DbSet<Schedule> Schedules { get; set; }
         public DbSet<Models.File> Files { get; set; }
+        public DbSet<Faq> Faqs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -47,10 +48,6 @@ namespace BicardBackend.Data
             .HasOne(b => b.User)
             .WithMany(a => a.Feedbacks)
             .HasForeignKey(b => b.UserId);
-            modelBuilder.Entity<Feedback>()
-            .HasOne(b => b.Doctor)
-            .WithMany(a => a.Feedbacks)
-            .HasForeignKey(b => b.DoctorId);
         }
 
     }

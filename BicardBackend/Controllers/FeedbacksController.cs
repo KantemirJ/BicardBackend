@@ -30,7 +30,6 @@ namespace BicardBackend.Controllers
             {
                 Message = feedbackDto.Message,
                 UserId = feedbackDto.UserId,
-                DoctorId = feedbackDto.DoctorId
             };
             await _context.Feedbacks.AddAsync(feedback);
             await _context.SaveChangesAsync();
@@ -54,30 +53,7 @@ namespace BicardBackend.Controllers
                 timeStamp = feedback.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")
             });
         }
-        [HttpGet("GetFeedbacksByDoctorId/{id}")]
-        public async Task<IActionResult> GetFeedbacksByDoctorId(int id)
-        {
-            var listOfFeedback = await _context.Feedbacks.Where(f => f.DoctorId == id).ToListAsync();
-            if (listOfFeedback == null)
-            {
-                return NotFound();
-            }
-            var tempList = new List<object>();
-            foreach (var feedback in listOfFeedback)
-            {
-                var user = await _userManager.FindByIdAsync(feedback.UserId.ToString());
-                var tempObject = new
-                {
-                    feedback.Id,
-                    feedback.Message,
-                    user.UserName,
-                    timeStamp = feedback.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")
-                };
-                tempList.Add(tempObject);
-            }
-
-            return Ok(tempList);
-        }
+        
         [HttpGet("GetAllFeedbacks")]
         public async Task<IActionResult> GetAllFeedbacks()
         {

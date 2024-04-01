@@ -7,9 +7,10 @@
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
         public int SubMedServiceId { get; set; }
-        public int DoctorId { get; set; }
+        public SubMedService SubMedService { get; set; }
         public string Age { get; set; }
         public bool IsConfirmed { get; set; } = false;
+        public DateTime Date { get; set; }
         public string TimeAtSchedule { get; set; }
         public DateTime TimeStamp { get; set; } = DateTime.UtcNow;
     }

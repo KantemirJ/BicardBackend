@@ -9,7 +9,5 @@ namespace BicardBackend.Models
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
         public int UserId { get; set; }
         public User User { get; set; }
-        public int? DoctorId { get; set; }
-        public Doctor? Doctor { get; set; }
     }
 }

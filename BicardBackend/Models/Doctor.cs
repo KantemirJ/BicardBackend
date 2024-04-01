@@ -14,6 +14,6 @@
         public string? Address { get; set; }
         public int UserId { get; set; }
         public ICollection<SubMedServiceDoctor>? SubMedServiceDoctors { get; set; }
-        public ICollection<Feedback>? Feedbacks { get; set; }
+        public ICollection<Schedule>? Schedules { get; set; }
     }
 }

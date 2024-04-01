@@ -27,6 +27,11 @@ namespace Bicard.Controllers
             {
                 return BadRequest();
             }
+            var subMedService = await _context.Subs.FindAsync(model.SubMedServiceId);
+            if (subMedService == null)
+            {
+                return NotFound();
+            }
             try
             {
                 var appointment = new Appointment()
@@ -34,8 +39,7 @@ namespace Bicard.Controllers
                     Name = model.Name,
                     Email = model.Email,
                     PhoneNumber = model.PhoneNumber,
-                    SubMedServiceId = model.SubMedServiceId,
-                    DoctorId = model.DoctorId,
+                    SubMedService = subMedService,
                     Age = model.Age,
                     TimeAtSchedule = model.TimeAtSchedule
                 };
@@ -66,13 +70,17 @@ namespace Bicard.Controllers
             {
                 return NotFound();
             }
+            var subMedService = await _context.Subs.FindAsync(model.SubMedServiceId);
+            if (subMedService == null)
+            {
+                return NotFound();
+            }
             appointment.Name = model.Name;
             appointment.Email = model.Email;
             appointment.PhoneNumber = model.PhoneNumber;
             appointment.Age = model.Age;
             appointment.TimeAtSchedule = model.TimeAtSchedule;
-            appointment.SubMedServiceId = model.SubMedServiceId;
-            appointment.DoctorId = model.DoctorId;
+            appointment.SubMedService = subMedService;
             appointment.IsConfirmed = true;
             await _context.SaveChangesAsync();
             return Ok("Appointment confirmed successfully.");
@@ -81,8 +89,7 @@ namespace Bicard.Controllers
         //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> Cancel(int id)
         {
-            var appointment = new Appointment { Id = id
-            };
+            var appointment = new Appointment { Id = id };
             _context.Appointments.Attach(appointment);
             _context.Appointments.Remove(appointment);
             await _context.SaveChangesAsync();
