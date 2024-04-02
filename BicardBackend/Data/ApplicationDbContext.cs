@@ -21,6 +21,7 @@ namespace BicardBackend.Data
         public DbSet<Models.File> Files { get; set; }
         public DbSet<Faq> Faqs { get; set; }
         public DbSet<Vacancy> Vacancies { get; set; }
+        public DbSet<Blog> Blogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
