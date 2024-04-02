@@ -7,8 +7,5 @@ namespace BicardBackend.DTOs
     {
         [Required]
         public string Message { get; set; }
-        [Required]
-        public int UserId { get; set; }
-        public int? DoctorId { get; set; }
     }
 }

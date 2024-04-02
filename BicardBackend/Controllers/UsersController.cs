@@ -18,9 +18,11 @@ namespace BicardBackend.Controllers
         private readonly RoleManager<Role> _roleManager;
         private readonly IJwtService _jwtService;
         private readonly ApplicationDbContext _context;
+        private readonly IFileService _fileService;
 
-        public UsersController(UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<Role> roleManager, IJwtService jwtService, ApplicationDbContext context)
+        public UsersController(UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<Role> roleManager, IJwtService jwtService, ApplicationDbContext context, IFileService fileService)
         {
+            _fileService = fileService;
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
@@ -117,6 +119,22 @@ namespace BicardBackend.Controllers
                 UserName = user.UserName
             }).ToList();
             return Ok(DtoList);
+        }
+        [HttpPost("AddPhoto")]
+        public async Task<IActionResult> AddPhoto(int userId, IFormFile photo)
+        {
+            if (photo == null)
+            {
+                return BadRequest();
+            }
+            var user = _context.Users.Find(userId);
+            if (user == null)
+            {
+                return BadRequest();
+            }
+            user.PhotoPath = await _fileService.SaveFileAsync(photo, "PhotosOfUsers");
+            await _context.SaveChangesAsync();
+            return Ok(user);
         }
     }
 }
