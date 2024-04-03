@@ -46,19 +46,32 @@ namespace BicardBackend.Services
         {
             try
             {
-                // Read the file content
                 byte[] fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
 
-                // Convert the file content to base64 string
                 string base64String = Convert.ToBase64String(fileBytes);
 
                 return base64String;
             }
             catch (Exception ex)
             {
-                // Handle exceptions, log, or return an error
                 Console.WriteLine($"Error converting file to base64: {ex.Message}");
                 return null;
+            }
+        }
+        public void DeleteFile(string path)
+        {
+            try
+            {
+                if (System.IO.File.Exists(Path.Combine(path)))
+                {
+                    System.IO.File.Delete(Path.Combine(path));
+                    Console.WriteLine("File deleted.");
+                }
+                else Console.WriteLine("File not found");
+            }
+            catch (IOException ioExp)
+            {
+                Console.WriteLine(ioExp.Message);
             }
         }
     }
