@@ -32,7 +32,7 @@ namespace BicardBackend.Controllers
             return Ok(blog);
         }
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(BlogDto dto)
+        public async Task<IActionResult> Create([FromForm] BlogDto dto)
         {
             if (dto == null)
             {
@@ -41,13 +41,13 @@ namespace BicardBackend.Controllers
             var author = _context.Doctors.Find(dto.AuthorId);
             if (author == null)
             {
-                return BadRequest();
+                return BadRequest("Doctor not found.");
             }
             Blog newBlog = new()
             {
                 Title = dto.Title,
                 Text = dto.Text,
-                Author = author,
+                AuthorId = dto.AuthorId,
                 PhotoPath = await _fileService.SaveFileAsync(dto.Photo, "PhotosOfBlogs"),
             };
             _context.Blogs.Add(newBlog);
@@ -73,8 +73,8 @@ namespace BicardBackend.Controllers
             }
             blog.Title = dto.Title;
             blog.Text = dto.Text;
-            blog.Timestamp = DateTime.Now;
-            blog.Author = author;
+            blog.Timestamp = DateTime.UtcNow;
+            blog.AuthorId = dto.AuthorId;
             blog.PhotoPath = await _fileService.SaveFileAsync(dto.Photo, "PhotosOfBlogs");
             await _context.SaveChangesAsync();
             return Ok(blog);

@@ -105,11 +105,7 @@ namespace BicardBackend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AuthorId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("AuthorId1")
+                    b.Property<int>("AuthorId")
                         .HasColumnType("integer");
 
                     b.Property<string>("PhotoPath")
@@ -129,7 +125,7 @@ namespace BicardBackend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AuthorId1");
+                    b.HasIndex("AuthorId");
 
                     b.ToTable("Blogs");
                 });
@@ -614,8 +610,8 @@ namespace BicardBackend.Migrations
             modelBuilder.Entity("BicardBackend.Models.Blog", b =>
                 {
                     b.HasOne("BicardBackend.Models.Doctor", "Author")
-                        .WithMany()
-                        .HasForeignKey("AuthorId1")
+                        .WithMany("Blogs")
+                        .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -727,6 +723,8 @@ namespace BicardBackend.Migrations
 
             modelBuilder.Entity("BicardBackend.Models.Doctor", b =>
                 {
+                    b.Navigation("Blogs");
+
                     b.Navigation("Schedules");
 
                     b.Navigation("SubMedServiceDoctors");

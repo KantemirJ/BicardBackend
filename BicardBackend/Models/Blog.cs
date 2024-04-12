@@ -5,9 +5,8 @@
         public int Id { get; set; }
         public string Title { get; set; }
         public string Text { get; set; }
-        public string AuthorId { get; set; }
-        public Doctor Author { get; set; }
-        public DateTime Timestamp { get; set; } = DateTime.Now;
+        public int AuthorId { get; set; }
+        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
         public string PhotoPath { get; set; }
 
     }
