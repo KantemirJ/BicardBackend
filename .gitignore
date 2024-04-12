@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /BicardBackend/Uploads/MedServicesFiles
 /BicardBackend/Uploads/PhotosOfDoctors
+/BicardBackend/Uploads/PhotosOfBlogs
