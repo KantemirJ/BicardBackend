@@ -11,6 +11,26 @@ namespace BicardBackend.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Appointments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: false),
+                    Age = table.Column<string>(type: "text", nullable: false),
+                    IsConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DoctorId = table.Column<int>(type: "integer", nullable: false),
+                    TimeStamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Appointments", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Articles",
                 columns: table => new
                 {
@@ -66,6 +86,23 @@ namespace BicardBackend.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Blogs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Text = table.Column<string>(type: "text", nullable: false),
+                    AuthorId = table.Column<int>(type: "integer", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    PhotoPath = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Blogs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -294,29 +331,6 @@ namespace BicardBackend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Blogs",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Title = table.Column<string>(type: "text", nullable: false),
-                    Text = table.Column<string>(type: "text", nullable: false),
-                    AuthorId = table.Column<int>(type: "integer", nullable: false),
-                    Timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    PhotoPath = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Blogs", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Blogs_Doctors_AuthorId",
-                        column: x => x.AuthorId,
-                        principalTable: "Doctors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Schedules",
                 columns: table => new
                 {
@@ -360,33 +374,6 @@ namespace BicardBackend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Appointments",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "text", nullable: false),
-                    SubMedServiceId = table.Column<int>(type: "integer", nullable: false),
-                    Age = table.Column<string>(type: "text", nullable: false),
-                    IsConfirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    TimeAtSchedule = table.Column<string>(type: "text", nullable: false),
-                    TimeStamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Appointments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Appointments_Subs_SubMedServiceId",
-                        column: x => x.SubMedServiceId,
-                        principalTable: "Subs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "SubsDoctors",
                 columns: table => new
                 {
@@ -409,11 +396,6 @@ namespace BicardBackend.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Appointments_SubMedServiceId",
-                table: "Appointments",
-                column: "SubMedServiceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -451,11 +433,6 @@ namespace BicardBackend.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Blogs_AuthorId",
-                table: "Blogs",
-                column: "AuthorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Feedbacks_UserId",

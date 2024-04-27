@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BicardBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240412071256_Initial")]
+    [Migration("20240427120141_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,6 +39,9 @@ namespace BicardBackend.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
@@ -54,19 +57,10 @@ namespace BicardBackend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("SubMedServiceId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("TimeAtSchedule")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("SubMedServiceId");
 
                     b.ToTable("Appointments");
                 });
@@ -126,8 +120,6 @@ namespace BicardBackend.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AuthorId");
 
                     b.ToTable("Blogs");
                 });
@@ -598,28 +590,6 @@ namespace BicardBackend.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BicardBackend.Models.Appointment", b =>
-                {
-                    b.HasOne("BicardBackend.Models.SubMedService", "SubMedService")
-                        .WithMany()
-                        .HasForeignKey("SubMedServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SubMedService");
-                });
-
-            modelBuilder.Entity("BicardBackend.Models.Blog", b =>
-                {
-                    b.HasOne("BicardBackend.Models.Doctor", "Author")
-                        .WithMany("Blogs")
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Author");
-                });
-
             modelBuilder.Entity("BicardBackend.Models.Feedback", b =>
                 {
                     b.HasOne("BicardBackend.Models.User", "User")
@@ -725,8 +695,6 @@ namespace BicardBackend.Migrations
 
             modelBuilder.Entity("BicardBackend.Models.Doctor", b =>
                 {
-                    b.Navigation("Blogs");
-
                     b.Navigation("Schedules");
 
                     b.Navigation("SubMedServiceDoctors");

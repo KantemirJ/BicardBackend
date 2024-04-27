@@ -39,7 +39,7 @@ namespace BicardBackend.Controllers
             if (result.Succeeded)
             {
                 // You may customize the response based on your needs
-                await _userManager.AddToRoleAsync(user, "Patient");
+                //await _userManager.AddToRoleAsync(user, "Patient");
                 return Ok(new { Message = "User registered successfully" });
             }
 
