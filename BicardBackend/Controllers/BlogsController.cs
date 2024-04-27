@@ -32,7 +32,8 @@ namespace BicardBackend.Controllers
         [HttpGet("Get")]
         public async Task<IActionResult> Get(int id)
         {
-            var blog = _context.Blogs.Find(id);
+            var blog = await _context.Blogs.FindAsync(id);
+            blog.PhotoPath = await _fileService.ConvertFileToBase64(blog.PhotoPath);
             return Ok(blog);
         }
         [HttpPost("Create")]
