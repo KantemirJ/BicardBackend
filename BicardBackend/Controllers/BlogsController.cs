@@ -23,6 +23,10 @@ namespace BicardBackend.Controllers
         public async Task<IActionResult> GetAll()
         {
             var listOfBlogs = _context.Blogs.ToList();
+            foreach(var item in listOfBlogs)
+            {
+                item.PhotoPath = await _fileService.ConvertFileToBase64(item.PhotoPath);
+            }
             return Ok(listOfBlogs);
         }
         [HttpGet("Get")]
