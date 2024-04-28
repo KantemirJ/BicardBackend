@@ -27,20 +27,11 @@ namespace BicardBackend.Controllers
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
-            var totalCount = _context.Blogs.Count();
-            var totalPages = totalCount / pageSize;
             foreach (var item in listOfBlogs)
             {
                 item.PhotoPath = await _fileService.ConvertFileToBase64(item.PhotoPath);
             }
-            return Ok(new
-            {
-                pageSize,
-                pageNumber,
-                totalCount,
-                totalPages,
-                listOfBlogs
-            });
+            return Ok(listOfBlogs);
         }
         [HttpGet("GetLatest")]
         public async Task<IActionResult> GetLatest()
