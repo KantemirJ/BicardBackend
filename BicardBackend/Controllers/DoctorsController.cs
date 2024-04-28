@@ -142,5 +142,44 @@ namespace BicardBackend.Controllers
             await _context.SaveChangesAsync();
             return Ok("Doctor deleted successfully");
         }
+
+        [HttpGet("GetSpeciality")]
+        public async Task<IActionResult> GetSpeciality()
+        {
+            var list = _context.Doctors
+                .Select(a => a.Speciality)
+                .Distinct()
+                .ToList();
+            return Ok(list);
+        }
+        [HttpGet("SearchByName")]
+        public async Task<IActionResult> SearchByName(string name)
+        {
+            var listOfDoctors = _context.Doctors
+                .Where(a => a.Name.Contains(name))
+                .ToList();
+            var listOfDoctorsDto = listOfDoctors.Select(async doctor =>
+            {
+                return new
+                {
+                    doctor.Id,
+                    doctor.Name,
+                    doctor.Speciality,
+                    doctor.Bio,
+                    doctor.Education,
+                    doctor.Experience,
+                    PhotoBase64 = await _fileService.ConvertFileToBase64(doctor.PathToPhoto),
+                    doctor.PhoneNumber,
+                    doctor.Email,
+                    doctor.Address,
+                    doctor.UserId,
+                };
+            });
+
+            // Wait for all async operations to complete
+            var result = await Task.WhenAll(listOfDoctorsDto);
+
+            return Ok(result);
+        }
     }
 }
