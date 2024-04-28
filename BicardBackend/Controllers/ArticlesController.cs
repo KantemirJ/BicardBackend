@@ -43,7 +43,7 @@ namespace BicardBackend.Controllers
             return Ok(list);
         }
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(ArticleDto dto)
+        public async Task<IActionResult> Create([FromForm]ArticleDto dto)
         {
             Article newArticle = new()
             {
