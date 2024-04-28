@@ -5,9 +5,12 @@ using BicardBackend.Models;
 using BicardBackend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BicardBackend.Controllers
 {
@@ -19,7 +22,17 @@ namespace BicardBackend.Controllers
         private readonly ApplicationDbContext _context;
         //private readonly IMapper _mapper;
         private readonly IFileService _fileService;
-
+        private static readonly Dictionary<DayOfWeek, string> DayOfWeekNamesRu =
+            new Dictionary<DayOfWeek, string>()
+            {
+              { DayOfWeek.Sunday, "Воскресенье" },
+              { DayOfWeek.Monday, "Понедельник" },
+              { DayOfWeek.Tuesday, "Вторник" },
+              { DayOfWeek.Wednesday, "Среда" },
+              { DayOfWeek.Thursday, "Четверг" },
+              { DayOfWeek.Friday, "Пятница" },
+              { DayOfWeek.Saturday, "Суббота" },
+            };
         public DoctorsController(ApplicationDbContext context, IMapper mapper, IFileService fileService) 
         {
             _context = context;
@@ -180,6 +193,54 @@ namespace BicardBackend.Controllers
             var result = await Task.WhenAll(listOfDoctorsDto);
 
             return Ok(result);
+        }
+        [HttpGet("SearchBySpeciality")]
+        public async Task<IActionResult> SearchBySpeciality(string speciality)
+        {
+            var listOfDoctors = _context.Doctors
+                .Where(a => a.Speciality.Contains(speciality))
+                .ToList();
+            var listOfDoctorsDto = listOfDoctors.Select(async doctor =>
+            {
+                return new
+                {
+                    doctor.Id,
+                    doctor.Name,
+                    doctor.Speciality,
+                    doctor.Bio,
+                    doctor.Education,
+                    doctor.Experience,
+                    PhotoBase64 = await _fileService.ConvertFileToBase64(doctor.PathToPhoto),
+                    doctor.PhoneNumber,
+                    doctor.Email,
+                    doctor.Address,
+                    doctor.UserId,
+                };
+            });
+
+            // Wait for all async operations to complete
+            var result = await Task.WhenAll(listOfDoctorsDto);
+
+            return Ok(result);
+        }
+        [HttpGet("GetWorkingHours")]
+        public async Task<IActionResult> GetWorkingHours(int doctorId)
+        {
+            var schedule = _context.Schedules
+                .Where(a => a.DoctorId == doctorId)
+                .Select(a => new 
+                {
+                    DayOfWeek = GetRussianDayOfWeekName(a.DayOfWeek), 
+                    a.StartTime, 
+                    a.EndTime 
+                })
+                .ToList();
+            
+            return Ok(schedule);
+        }
+        public static string GetRussianDayOfWeekName(DayOfWeek dayOfWeek)
+        {
+            return DayOfWeekNamesRu.ContainsKey(dayOfWeek) ? DayOfWeekNamesRu[dayOfWeek] : "Неизвестный день";
         }
     }
 }

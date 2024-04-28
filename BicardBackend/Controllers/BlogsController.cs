@@ -46,6 +46,20 @@ namespace BicardBackend.Controllers
             }
             return Ok(listOfBlogs);
         }
+        [HttpGet("GetLatestByDoctor")]
+        public async Task<IActionResult> GetLatestByDoctor(int doctorId)
+        {
+            var listOfBlogs = _context.Blogs
+                .Where(a => a.AuthorId == doctorId)
+                .OrderByDescending(a => a.Timestamp)
+                .Take(3)
+                .ToList();
+            foreach (var item in listOfBlogs)
+            {
+                item.PhotoPath = await _fileService.ConvertFileToBase64(item.PhotoPath);
+            }
+            return Ok(listOfBlogs);
+        }
         [HttpGet("Get")]
         public async Task<IActionResult> Get(int id)
         {
