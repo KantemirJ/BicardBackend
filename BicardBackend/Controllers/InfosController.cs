@@ -1,4 +1,5 @@
 ﻿using BicardBackend.Data;
+using BicardBackend.DTOs;
 using BicardBackend.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,27 +23,30 @@ namespace BicardBackend.Controllers
             return Ok(list);
         }
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(string title, string text)
+        public async Task<IActionResult> Create([FromForm] InfoDto model)
         {
             Info newInfo = new()
             {
-                Title = title,
-                Text = text
+                Question = model.Question,
+                Answer = model.Answer,
+                Type = model.Type
             };
+
             _context.Add(newInfo);
             await _context.SaveChangesAsync();
             return Ok(newInfo);
         }
         [HttpPut("Update")]
-        public async Task<IActionResult> Update(int id, string title, string text)
+        public async Task<IActionResult> Update([FromForm] InfoDto model)
         {
-            var info = _context.Info.Find(id);
+            var info = _context.Info.Find(model.Id);
             if (info == null)
             {
                 return BadRequest();
             }
-            info.Title = title;
-            info.Text = text;
+            info.Question = model.Question;
+            info.Answer = model.Answer;
+            info.Type = model.Type;
             await _context.SaveChangesAsync();
             return Ok(info);
         }
