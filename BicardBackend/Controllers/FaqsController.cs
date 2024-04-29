@@ -22,30 +22,33 @@ namespace BicardBackend.Controllers
 
             return Ok(listOfFaqs);
         }
-        [HttpPost("Create")]
-        public async Task<IActionResult> Create(string question, string answer)
+        [HttpGet("GetByType")]
+        public async Task<IActionResult> Get(string type)
         {
-            Faq newFaq = new()
-            {
-                Question = question,
-                Answer = answer
-            };
-            _context.Faqs.Add(newFaq);
+            var listOfFaqs = await _context.Faqs.Where(a => a.Type.Contains(type)).ToListAsync();
+
+            return Ok(listOfFaqs);
+        }
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create([FromForm] Faq faq)
+        {
+            _context.Faqs.Add(faq);
             await _context.SaveChangesAsync();
             return Ok();
         }
         [HttpPut("Update")]
-        public async Task<IActionResult> Update(int id, string question, string answer)
+        public async Task<IActionResult> Update([FromForm] Faq model)
         {
-            var faq = await _context.Faqs.FindAsync(id);
+            var faq = await _context.Faqs.FindAsync(model.Id);
             if (faq == null)
             {
                 return BadRequest("Not Found.");
             }
             try
             {
-                faq.Answer = answer;
-                faq.Question = question;
+                faq.Answer = model.Answer;
+                faq.Question = model.Question;
+                faq.Type = model.Type;
                 await _context.SaveChangesAsync();
                 return Ok();
             }

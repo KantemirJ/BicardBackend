@@ -27,9 +27,8 @@ namespace BicardBackend.Controllers
         {
             Info newInfo = new()
             {
-                Question = model.Question,
-                Answer = model.Answer,
-                Type = model.Type
+                Title = model.Title,
+                Content = model.Content
             };
 
             _context.Add(newInfo);
@@ -44,9 +43,8 @@ namespace BicardBackend.Controllers
             {
                 return BadRequest();
             }
-            info.Question = model.Question;
-            info.Answer = model.Answer;
-            info.Type = model.Type;
+            info.Title = model.Title;
+            info.Content = model.Content;
             await _context.SaveChangesAsync();
             return Ok(info);
         }
