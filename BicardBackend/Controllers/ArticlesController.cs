@@ -29,17 +29,23 @@ namespace BicardBackend.Controllers
             }
             return Ok(new
             {
-                Id = article.Id,
-                Title = article.Title,
-                File = _fileService.ConvertFileToBase64(article.FilePath),
-                AuthorName = article.AuthorName,
-                Timestamp = article.Timestamp
+                article.Id,
+                article.Title,
+                article.FilePath,
+                article.AuthorName,
+                article.Timestamp
             });
         }
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var list = await _context.Articles.Select(a => new {a.Id, a.Title, a.AuthorName, a.Timestamp}).ToListAsync();
+            var list = await _context.Articles.Select(a => new {a.Id, a.Title, a.FilePath, a.AuthorName, a.Timestamp}).ToListAsync();
+            return Ok(list);
+        }
+        [HttpGet("GetByAuthorName")]
+        public async Task<IActionResult> GetByAuthorName(string name)
+        {
+            var list = await _context.Articles.Where(a => a.AuthorName == name).Select(a => new { a.Id, a.Title, a.FilePath, a.AuthorName, a.Timestamp }).ToListAsync();
             return Ok(list);
         }
         [HttpPost("Create")]
