@@ -18,9 +18,14 @@ namespace BicardBackend.Controllers
         [HttpGet("GetAll")]
         public async Task<IActionResult> Get()
         {
-            var listOfFaqs = await _context.Faqs.ToListAsync();
+            var groupedFaqs = _context.Faqs.GroupBy(f => f.Type)
+                      .Select(group => new
+                      {
+                          type = group.Key,
+                          faqs = group.ToArray()
+                      });
 
-            return Ok(listOfFaqs);
+            return Ok(groupedFaqs);
         }
         [HttpGet("GetByType")]
         public async Task<IActionResult> Get(string type)
