@@ -8,7 +8,7 @@ namespace BicardBackend.Services
         public async Task<string> SaveFileAsync(IFormFile file, string subFolder)
         {
             // Define the folder where you want to store the files
-            string uploadsFolder = "C:\\BicardUpload";
+            string uploadsFolder = "C:\\Temp";
 
             // Ensure the "Uploads" folder exists; create it if it doesn't
             if (!Directory.Exists(uploadsFolder))
@@ -33,8 +33,9 @@ namespace BicardBackend.Services
                 await file.CopyToAsync(stream);
             }
 
-            // Return the full path of the saved file
-            return filePath;
+            var tempPath = Path.Combine(subFolder, fileName);
+
+            return tempPath.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         }
         public async Task<string> ConvertFileToBase64(string filePath)
         {
