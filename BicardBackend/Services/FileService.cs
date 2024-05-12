@@ -4,17 +4,11 @@ namespace BicardBackend.Services
 {
     public class FileService : IFileService
     {
-        private readonly IWebHostEnvironment _environment;
-
-        public FileService(IWebHostEnvironment environment)
-        {
-            _environment = environment;
-        }
 
         public async Task<string> SaveFileAsync(IFormFile file, string subFolder)
         {
             // Define the folder where you want to store the files
-            string uploadsFolder = Path.Combine(_environment.ContentRootPath, "Uploads");
+            string uploadsFolder = "C:\\BicardUpload";
 
             // Ensure the "Uploads" folder exists; create it if it doesn't
             if (!Directory.Exists(uploadsFolder))
