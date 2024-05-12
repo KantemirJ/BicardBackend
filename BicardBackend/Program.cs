@@ -108,6 +108,18 @@ app.UseSwaggerUI(c =>
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Bicard API V1");
     c.RoutePrefix = "swagger"; // Set the Swagger UI at the root of the application
 });
+app.UseStaticFiles();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(builder.Configuration.GetConnectionString("FileStorageFolder"))),
+    RequestPath = "/FileStorage"
+});
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(builder.Configuration.GetConnectionString("TempFileStorageFolder"))),
+    RequestPath = "/TempFileStorage"
+});
 
 //app.UseHttpsRedirection();
 app.UseAuthentication();
