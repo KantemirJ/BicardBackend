@@ -13,7 +13,7 @@ namespace BicardBackend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class FeedbacksController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
