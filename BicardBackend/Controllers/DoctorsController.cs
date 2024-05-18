@@ -54,7 +54,7 @@ namespace BicardBackend.Controllers
                     doctor.Bio,
                     doctor.Education,
                     doctor.Experience,
-                    PhotoBase64 = await _fileService.ConvertFileToBase64(doctor.PathToPhoto),
+                    PhotoBase64 = doctor.PathToPhoto,
                     doctor.PhoneNumber,
                     doctor.Email,
                     doctor.Address,
