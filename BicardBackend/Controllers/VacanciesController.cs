@@ -1,5 +1,6 @@
 ﻿using BicardBackend.Data;
 using BicardBackend.Models;
+using BicardBackend.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,10 +11,12 @@ namespace BicardBackend.Controllers
     [ApiController]
     public class VacanciesController : ControllerBase
     {
-        private ApplicationDbContext _context;
-        public VacanciesController(ApplicationDbContext context)
+        private readonly ApplicationDbContext _context;
+        private readonly ITgBotService _tgBotService;
+        public VacanciesController(ApplicationDbContext context, ITgBotService tgBotService)
         {
             _context = context;
+            _tgBotService = tgBotService;
         }
         [HttpGet("GetAll")]
         public async Task<IActionResult> Get()
@@ -30,6 +33,7 @@ namespace BicardBackend.Controllers
                 Requirements = dto.Requirements,
                 Description = dto.Description
             };
+            _tgBotService.SendMessageAsync($"A new vacancy is created. Position: {newVacancy.Position}");
             _context.Vacancies.Add(newVacancy);
             await _context.SaveChangesAsync();
             return Ok(newVacancy);
