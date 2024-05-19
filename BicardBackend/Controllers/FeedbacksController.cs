@@ -13,7 +13,6 @@ namespace BicardBackend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class FeedbacksController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -26,6 +25,7 @@ namespace BicardBackend.Controllers
             _fileService = fileService;
         }
         [HttpPost("Create")]
+        [Authorize]
         public async Task<IActionResult> Create(FeedbackDto feedbackDto)
         {
             if (!ModelState.IsValid)
