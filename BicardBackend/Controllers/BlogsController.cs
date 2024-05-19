@@ -29,7 +29,7 @@ namespace BicardBackend.Controllers
                 .ToList();
             foreach (var item in listOfBlogs)
             {
-                item.PhotoPath = await _fileService.ConvertFileToBase64(item.PhotoPath);
+                item.PhotoPath = item.PhotoPath;
             }
             return Ok(listOfBlogs);
         }
@@ -91,7 +91,7 @@ namespace BicardBackend.Controllers
             return Ok(newBlog);
         }
         [HttpPut("Update")]
-        public async Task<IActionResult> Update(BlogDto dto)
+        public async Task<IActionResult> Update(int id, [FromForm] BlogDto dto)
         {
             if (dto == null)
             {

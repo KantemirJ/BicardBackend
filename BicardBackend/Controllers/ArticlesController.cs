@@ -62,7 +62,7 @@ namespace BicardBackend.Controllers
             return Ok();
         }
         [HttpPut("Update")]
-        public async Task<IActionResult> Update(int id, ArticleDto dto)
+        public async Task<IActionResult> Update(int id, [FromForm]ArticleDto dto)
         {
             var article = await _context.Articles.FindAsync(id);
             if (article == null)
