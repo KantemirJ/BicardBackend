@@ -19,10 +19,16 @@ namespace BicardBackend.Controllers
             _tgBotService = tgBotService;
         }
         [HttpGet("GetAll")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAll()
         {
             var listOfVacancies = await _context.Vacancies.ToListAsync();
             return Ok(listOfVacancies);
+        }
+        [HttpGet("Get")]
+        public async Task<IActionResult> Get(int id)
+        {
+            var vacancy = await _context.Vacancies.Where(a => a.Id == id).FirstOrDefaultAsync();
+            return Ok(vacancy);
         }
         [HttpPost("Create")]
         public async Task<IActionResult> Create(VacancyDto dto)
