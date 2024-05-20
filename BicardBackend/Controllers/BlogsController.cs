@@ -29,7 +29,7 @@ namespace BicardBackend.Controllers
                 .ToList();
             foreach (var item in listOfBlogs)
             {
-                item.PhotoPath = item.PhotoPath;
+                item.PhotoPath = await _fileService.ConvertFileToBase64(item.PhotoPath);
             }
             return Ok(listOfBlogs);
         }

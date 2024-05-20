@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.FileProviders;
+using Telegram.Bot.Types;
 
 namespace BicardBackend.Services
 {
@@ -41,7 +42,8 @@ namespace BicardBackend.Services
         {
             try
             {
-                byte[] fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+                string uploadsFolder = "C:\\Temp";
+                byte[] fileBytes = await System.IO.File.ReadAllBytesAsync(Path.Combine(uploadsFolder, filePath));
 
                 string base64String = Convert.ToBase64String(fileBytes);
 
