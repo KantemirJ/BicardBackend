@@ -40,10 +40,6 @@ namespace BicardBackend.Controllers
                 .OrderByDescending(a => a.Timestamp)
                 .Take(3)
                 .ToList();
-            foreach (var item in listOfBlogs)
-            {
-                item.PhotoPath = await _fileService.ConvertFileToBase64(item.PhotoPath);
-            }
             return Ok(listOfBlogs);
         }
         [HttpGet("GetLatestByDoctor")]
@@ -54,17 +50,12 @@ namespace BicardBackend.Controllers
                 .OrderByDescending(a => a.Timestamp)
                 .Take(3)
                 .ToList();
-            foreach (var item in listOfBlogs)
-            {
-                item.PhotoPath = await _fileService.ConvertFileToBase64(item.PhotoPath);
-            }
             return Ok(listOfBlogs);
         }
         [HttpGet("Get")]
         public async Task<IActionResult> Get(int id)
         {
             var blog = await _context.Blogs.FindAsync(id);
-            blog.PhotoPath = await _fileService.ConvertFileToBase64(blog.PhotoPath);
             return Ok(blog);
         }
         [HttpPost("Create")]

@@ -60,7 +60,7 @@ namespace BicardBackend.Controllers
             string path;
             if (user.PhotoPath == null)
             {
-                path = "C:\\Users\\user\\source\\repos\\BicardBackend\\BicardBackend\\Uploads\\PhotosOfUsers\\default.png";
+                path = "C:\\Temp\\PhotosOfUsers\\default.png";
             }
             else
             {
@@ -71,7 +71,7 @@ namespace BicardBackend.Controllers
                 feedback.Id,
                 feedback.Message,
                 user.UserName,
-                UserPhoto = _fileService.ConvertFileToBase64(path).Result,
+                PathToUserPhoto = path,
                 timeStamp = feedback.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")
             });
         }
@@ -91,7 +91,7 @@ namespace BicardBackend.Controllers
                 string path;
                 if (user.PhotoPath == null)
                 {
-                    path = "C:\\Users\\user\\source\\repos\\BicardBackend\\BicardBackend\\Uploads\\PhotosOfUsers\\default.png";
+                    path = "C:\\Temp\\PhotosOfUsers\\default.png";
                 }
                 else
                 {
@@ -102,7 +102,7 @@ namespace BicardBackend.Controllers
                     feedback.Id,
                     feedback.Message,
                     user.UserName,
-                    UserPhoto = _fileService.ConvertFileToBase64(path).Result,
+                    PathToUserPhoto = path,
                     timeStamp = feedback.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")
                 };
                 tempList.Add(tempObject);
