@@ -16,14 +16,20 @@ namespace BicardBackend.Controllers
         {
             _context = context;
         }
-        [HttpGet("Get")]
-        public async Task<IActionResult> Get()
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
         {
             var list = await _context.Info.ToListAsync();
             return Ok(list);
         }
+        [HttpGet("Get")]
+        public async Task<IActionResult> Get(int id)
+        {
+            var info = await _context.Info.Where(a => a.Id == id).FirstOrDefaultAsync();
+            return Ok(info);
+        }
         [HttpPost("Create")]
-        public async Task<IActionResult> Create([FromForm] InfoDto model)
+        public async Task<IActionResult> Create(InfoDto model)
         {
             Info newInfo = new()
             {
@@ -36,7 +42,7 @@ namespace BicardBackend.Controllers
             return Ok(newInfo);
         }
         [HttpPut("Update")]
-        public async Task<IActionResult> Update([FromForm] InfoDto model)
+        public async Task<IActionResult> Update(InfoDto model)
         {
             var info = _context.Info.Find(model.Id);
             if (info == null)
