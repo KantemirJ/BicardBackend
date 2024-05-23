@@ -42,9 +42,9 @@ namespace BicardBackend.Controllers
             return Ok(newInfo);
         }
         [HttpPut("Update")]
-        public async Task<IActionResult> Update(InfoDto model)
+        public async Task<IActionResult> Update(int id, InfoDto model)
         {
-            var info = _context.Info.Find(model.Id);
+            var info = _context.Info.Find(id);
             if (info == null)
             {
                 return BadRequest();
