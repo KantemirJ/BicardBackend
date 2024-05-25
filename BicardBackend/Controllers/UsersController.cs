@@ -6,6 +6,8 @@ using BicardBackend.DTOs;
 using BicardBackend.Models;
 using Microsoft.EntityFrameworkCore;
 using BicardBackend.Data;
+using System.Reflection;
+using static System.Net.WebRequestMethods;
 
 namespace BicardBackend.Controllers
 {
@@ -19,8 +21,9 @@ namespace BicardBackend.Controllers
         private readonly IJwtService _jwtService;
         private readonly ApplicationDbContext _context;
         private readonly IFileService _fileService;
+        private readonly IEmailService _emailService;
 
-        public UsersController(UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<Role> roleManager, IJwtService jwtService, ApplicationDbContext context, IFileService fileService)
+        public UsersController(UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<Role> roleManager, IJwtService jwtService, ApplicationDbContext context, IFileService fileService, IEmailService emailService)
         {
             _fileService = fileService;
             _userManager = userManager;
@@ -28,6 +31,7 @@ namespace BicardBackend.Controllers
             _roleManager = roleManager;
             _jwtService = jwtService;
             _context = context;
+            _emailService = emailService;
         }
 
         [HttpPost("register")]
@@ -135,6 +139,79 @@ namespace BicardBackend.Controllers
             user.PhotoPath = await _fileService.SaveFileAsync(photo, "PhotosOfUsers");
             await _context.SaveChangesAsync();
             return Ok(user);
+        }
+        [HttpPost("SendPasswordResetLink")]
+        public async Task<IActionResult> SendPasswordResetLink(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return BadRequest("Invalid email address.");
+            }
+            try
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var resetLink = $"https://localhost:7120/api/Users/ResetPassword/&email={user.Email}?token={token}&password=qwerty&confirmPassword=qwerty"; // Include email for display purposes only
+                // Logic to send password reset email with link containing the token
+                var templatePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "ResetPassword.html");
+                var template = await ReadTemplateFileAsync(templatePath);
+                template = template.Replace("[RESET_PASSWORD_LINK]", resetLink);
+                template = template.Replace("[NUMBER]", "1");
+                template = template.Replace("[Your Application Name]", "Bicard");
+                _emailService.Send(email, "Reset Password", template, "BicardSystem");
+                
+                return Ok("Password reset link has been sent to your email.");
+            }
+            catch (Exception ex)
+            {
+                // Handle exception during token generation (log the error)
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword(string email, string token, string password, string confirmPassword)
+        {
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(token) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(confirmPassword))
+            {
+                return BadRequest("Missing required fields.");
+            }
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return BadRequest("Invalid email address.");
+            }
+
+            try
+            {
+                var resetResult = await _userManager.ResetPasswordAsync(user, token, password);
+                if (!resetResult.Succeeded)
+                {
+                    return BadRequest(string.Join(",", resetResult.Errors.Select(e => e.Description)));
+                }
+
+                return Ok("Password reset successful.");
+            }
+            catch (Exception ex)
+            {
+                // Handle other potential exceptions (e.g., token expiration)
+                return BadRequest("An error occurred while processing your request.");
+            }
+        }
+        private async Task<string> ReadTemplateFileAsync(string filePath)
+        {
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(filePath))
+            {
+                if (stream == null)
+                {
+                    throw new FileNotFoundException($"Email template not found: {filePath}");
+                }
+
+                using (var reader = new StreamReader(stream))
+                {
+                    return await reader.ReadToEndAsync();
+                }
+            }
         }
     }
 }
