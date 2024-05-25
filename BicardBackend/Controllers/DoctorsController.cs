@@ -224,10 +224,10 @@ namespace BicardBackend.Controllers
             return Ok(result);
         }
         [HttpGet("GetWorkingHours")]
-        public async Task<IActionResult> GetWorkingHours(int doctorId)
+        public async Task<IActionResult> GetWorkingHours(int id)
         {
             var schedule = _context.Schedules
-                .Where(a => a.DoctorId == doctorId)
+                .Where(a => a.DoctorId == id)
                 .Select(a => new 
                 {
                     DayOfWeek = GetRussianDayOfWeekName(a.DayOfWeek), 
