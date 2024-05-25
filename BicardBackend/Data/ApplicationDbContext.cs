@@ -24,6 +24,7 @@ namespace BicardBackend.Data
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<Info> Info { get; set; }
         public DbSet<Article> Articles { get; set; }
+        public DbSet<Certificate> Certificates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

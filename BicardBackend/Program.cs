@@ -20,6 +20,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.Configure<SmtpModel>(builder.Configuration.GetSection("SMTP"));
 builder.Services.AddSingleton<ITgBotService, TgBotService>();
 builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
 {
@@ -68,7 +69,8 @@ builder.Services.AddIdentity<User, Role>(options => {
     options.Password.RequireLowercase = false;
 })
     .AddRoles<Role>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddTokenProvider<DataProtectorTokenProvider<User>>(TokenOptions.DefaultProvider);
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -98,6 +100,7 @@ builder.Services.AddAuthentication(options =>
         //};
     });
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddSingleton<IWebHostEnvironment>(builder.Environment);
 builder.Services.AddAuthorization();
 
