@@ -3,8 +3,11 @@ using BicardBackend.Data;
 using BicardBackend.DTOs;
 using BicardBackend.Models;
 using BicardBackend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BicardBackend.Controllers
 {
@@ -14,10 +17,12 @@ namespace BicardBackend.Controllers
     {
         private readonly IFileService _fileService;
         private readonly ApplicationDbContext _context;
-        public BlogsController(ApplicationDbContext context, IFileService fileService)
+        private readonly UserManager<User> _userManager;
+        public BlogsController(ApplicationDbContext context, IFileService fileService, UserManager<User> userManager)
         {
             _fileService = fileService;
             _context = context;
+            _userManager = userManager;
         }
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll(int pageSize, int pageNumber)
@@ -27,10 +32,6 @@ namespace BicardBackend.Controllers
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
-            foreach (var item in listOfBlogs)
-            {
-                item.PhotoPath = await _fileService.ConvertFileToBase64(item.PhotoPath);
-            }
             return Ok(listOfBlogs);
         }
         [HttpGet("GetLatest")]
@@ -65,11 +66,7 @@ namespace BicardBackend.Controllers
             {
                 return BadRequest();
             }
-            var author = _context.Doctors.Find(dto.AuthorId);
-            if (author == null)
-            {
-                return BadRequest("Doctor not found.");
-            }
+            
             Blog newBlog = new()
             {
                 Title = dto.Title,
@@ -88,16 +85,12 @@ namespace BicardBackend.Controllers
             {
                 return BadRequest();
             }
-            var blog = _context.Blogs.Find(dto.Id);
+            var blog = _context.Blogs.Find(id);
             if (blog == null)
             {
                 return NotFound();
             }
-            var author = _context.Doctors.Find(dto.AuthorId);
-            if(author == null)
-            {
-                return BadRequest();
-            }
+            
             blog.Title = dto.Title;
             blog.Text = dto.Text;
             blog.Timestamp = DateTime.UtcNow;

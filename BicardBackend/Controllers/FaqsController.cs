@@ -27,6 +27,13 @@ namespace BicardBackend.Controllers
 
             return Ok(groupedFaqs);
         }
+        [HttpGet("Get")]
+        public async Task<IActionResult> Get(int id)
+        {
+            var Faq = await _context.Faqs.Where(a => a.Id == id).FirstOrDefaultAsync();
+
+            return Ok(Faq);
+        }
         [HttpGet("GetByType")]
         public async Task<IActionResult> Get(string type)
         {
@@ -35,16 +42,16 @@ namespace BicardBackend.Controllers
             return Ok(listOfFaqs);
         }
         [HttpPost("Create")]
-        public async Task<IActionResult> Create([FromForm] Faq faq)
+        public async Task<IActionResult> Create(Faq faq)
         {
             _context.Faqs.Add(faq);
             await _context.SaveChangesAsync();
             return Ok();
         }
         [HttpPut("Update")]
-        public async Task<IActionResult> Update([FromForm] Faq model)
+        public async Task<IActionResult> Update(int id, Faq model)
         {
-            var faq = await _context.Faqs.FindAsync(model.Id);
+            var faq = await _context.Faqs.FindAsync(id);
             if (faq == null)
             {
                 return BadRequest("Not Found.");
