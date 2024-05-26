@@ -8,7 +8,7 @@ namespace BicardBackend.Services;
 
 public interface IEmailService
 {
-    void Send(string to, string subject, string html, string from = null);
+    void Send(string to, string subject, string html);
 }
 
 public class EmailService : IEmailService
@@ -20,11 +20,12 @@ public class EmailService : IEmailService
         _appSettings = appSettings.Value;
     }
 
-    public void Send(string to, string subject, string html, string from = null)
+    public void Send(string to, string subject, string html)
     {
         // create message
         var email = new MimeMessage();
-        email.From.Add(MailboxAddress.Parse(from ?? _appSettings.EmailFrom));
+        var fromAddress = new MailboxAddress("Bicard", "noreply@bicard.com");
+        email.From.Add(fromAddress);
         email.To.Add(MailboxAddress.Parse(to));
         email.Subject = subject;
         email.Body = new TextPart(TextFormat.Html) { Text = html };
