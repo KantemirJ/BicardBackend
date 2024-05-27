@@ -181,14 +181,11 @@ namespace BicardBackend.Controllers
             try
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var resetLink = $"https://localhost:7120/api/Users/ResetPassword/&email={user.Email}?token={token}&password=qwerty&confirmPassword=qwerty"; // Include email for display purposes only
-                // Logic to send password reset email with link containing the token
-                var templatePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "ResetPassword.html");
-                var template = await ReadTemplateFileAsync(templatePath);
-                template = template.Replace("[RESET_PASSWORD_LINK]", resetLink);
-                template = template.Replace("[NUMBER]", "1");
-                template = template.Replace("[Your Application Name]", "Bicard");
-                _emailService.Send(email, "Reset Password", template, "BicardSystem");
+                var template = await ReadTemplateFileAsync("BicardBackend.EmailTemplates.ResetPassword.html");
+                template = template.Replace("[TOKEN]", token);
+                template = template.Replace("[HOURS]", "1");
+                template = template.Replace("[NAME]", user.UserName);
+                _emailService.Send(email, "Сброс пароля для веб приложения клиники Бикард", template);
                 
                 return Ok("Password reset link has been sent to your email.");
             }

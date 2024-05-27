@@ -38,12 +38,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="EmailTemplates\ConfirmEmail.html">
+    <EmbeddedResource Include="EmailTemplates\ResetPassword.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="EmailTemplates\ResetPassword.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
