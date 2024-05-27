@@ -42,18 +42,37 @@ namespace BicardBackend.Controllers
 
             if (result.Succeeded)
             {
-                var token = _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var link = $"https://localhost:7120/api/Users/ConfirmEmail/&userId={user.Id}?token={token}";
-                var templatePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "ConfirmEmail.html");
-                var template = await ReadTemplateFileAsync(templatePath);
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var link = $"https://localhost:7120/api/Users/ConfirmEmail?userId={user.Id}&token={token}";
+                var template = await ReadTemplateFileAsync("BicardBackend.EmailTemplates.ConfirmEmail.html");
                 template = template.Replace("[CONFIRMATION_LINK]", link);
                 template = template.Replace("[NUMBER]", "1");
-                
-                _emailService.Send(model.Email, "Подтвердите Ваш электронный адрес", template, "BicardSystem");
+                template = template.Replace("[NAME]", user.UserName);
+
+                _emailService.Send(model.Email, "Подтвердите Ваш электронный адрес", template);
                 return Ok(new { Message = "User registered successfully" });
             }
 
             return BadRequest(new { result.Errors });
+        }
+        [HttpGet("ResendConfirmationEmail")]
+        public async Task<IActionResult> ResendConfirmationEmail(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user != null)
+            {
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var link = $"https://localhost:7120/api/Users/ConfirmEmail?userId={user.Id}&token={token}";
+                var template = await ReadTemplateFileAsync("BicardBackend.EmailTemplates.ConfirmEmail.html");
+                template = template.Replace("[CONFIRMATION_LINK]", link);
+                template = template.Replace("[NUMBER]", "1");
+
+                _emailService.Send(email, "Подтвердите Ваш электронный адрес", template);
+                return Ok(new { Message = "User registered successfully" });
+            }
+
+            return BadRequest("Invalid email address");
         }
 
         [HttpPost("login")]
@@ -146,7 +165,7 @@ namespace BicardBackend.Controllers
             await _context.SaveChangesAsync();
             return Ok(user);
         }
-        [HttpPost("ConfirmEmail")]
+        [HttpGet("ConfirmEmail")]
         public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
         {
             if (userId == null || token == null)
@@ -163,7 +182,7 @@ namespace BicardBackend.Controllers
             var result = await _userManager.ConfirmEmailAsync(user, token);
             if (result.Succeeded)
             {
-                return Ok("Email confirmed successfully");
+                return Redirect("https://www.youtube.com/");
             }
 
             return BadRequest(string.Join(",", result.Errors.Select(e => e.Description))); // Return validation errors
