@@ -42,8 +42,14 @@ namespace BicardBackend.Controllers
 
             if (result.Succeeded)
             {
-                // You may customize the response based on your needs
-                //await _userManager.AddToRoleAsync(user, "Patient");
+                var token = _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var link = $"https://localhost:7120/api/Users/ConfirmEmail/&userId={user.Id}?token={token}";
+                var templatePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "ConfirmEmail.html");
+                var template = await ReadTemplateFileAsync(templatePath);
+                template = template.Replace("[CONFIRMATION_LINK]", link);
+                template = template.Replace("[NUMBER]", "1");
+                
+                _emailService.Send(model.Email, "Подтвердите Ваш электронный адрес", template, "BicardSystem");
                 return Ok(new { Message = "User registered successfully" });
             }
 
@@ -140,6 +146,30 @@ namespace BicardBackend.Controllers
             await _context.SaveChangesAsync();
             return Ok(user);
         }
+        [HttpPost("ConfirmEmail")]
+        public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
+        {
+            if (userId == null || token == null)
+            {
+                return BadRequest("Missing user ID or confirmation token");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (result.Succeeded)
+            {
+                return Ok("Email confirmed successfully");
+            }
+
+            return BadRequest(string.Join(",", result.Errors.Select(e => e.Description))); // Return validation errors
+        }
+
+
         [HttpPost("SendPasswordResetLink")]
         public async Task<IActionResult> SendPasswordResetLink(string email)
         {

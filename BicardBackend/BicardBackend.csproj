@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="EmailTemplates\ConfirmEmail.html" />
     <None Remove="EmailTemplates\ResetPassword.html" />
   </ItemGroup>
 
@@ -37,6 +38,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="EmailTemplates\ConfirmEmail.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="EmailTemplates\ResetPassword.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
