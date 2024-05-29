@@ -43,7 +43,7 @@ namespace BicardBackend.Controllers
             if (result.Succeeded)
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var link = $"https://localhost:3000?userId={user.Id}&token={token}";
+                var link = $"https://localhost:3000/confirm-email?userId={user.Id}&token={token}";
                 var template = await ReadTemplateFileAsync("BicardBackend.EmailTemplates.ConfirmEmail.html");
                 template = template.Replace("[CONFIRMATION_LINK]", link);
                 template = template.Replace("[NUMBER]", "1");

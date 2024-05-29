@@ -91,7 +91,7 @@ namespace BicardBackend.Controllers
                 };
                 for (int i = 0; i < 7; i++)
                 {
-                    var currentDay = DateTime.Today.AddDays(i);
+                    var currentDay = DateTime.Today.AddDays(i).ToUniversalTime();
                     var dayOfWeek = GetRussianDayOfWeekName(currentDay.DayOfWeek);
                     TimeTableDay timeTableDay = new()
                     {
