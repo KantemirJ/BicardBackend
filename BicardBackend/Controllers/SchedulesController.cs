@@ -144,7 +144,7 @@ namespace BicardBackend.Controllers
         public async Task<IActionResult> GetTimetableByDoctor(DateTime day, int doctorId)
         {
             // List to store time slots for multiple days
-            List<object> timeSlots = new List<object>();
+            List<object> timeTable = new List<object>();
 
             for (int i = 0; i < 7; i++)
             {
@@ -161,19 +161,19 @@ namespace BicardBackend.Controllers
                     .Where(a => a.Date.Date == currentDay.Date && a.DoctorId == doctorId)
                     .Select(a => a.Date.ToString("HH:mm"))
                     .ToList();
-
+                var timeslots = GenerateTimeSlotsWithStatus(schedule?.StartTime ?? null, schedule?.EndTime ?? null, 30, appointments);
                 // Add time slot object for current day
-                timeSlots.Add(new
+                timeTable.Add(new
                 {
                     Date = currentDay,
                     dayOfWeek,
                     startTime = schedule?.StartTime ?? null, // Handle null schedule
                     endTime = schedule?.EndTime ?? null,
-                    appointments
+                    timeslots
                 });
             }
 
-            return Ok(timeSlots);
+            return Ok(timeTable);
         }
 
         private string GetRussianDayOfWeekName(DayOfWeek dayOfWeek)
