@@ -43,7 +43,7 @@ namespace BicardBackend.Controllers
             if (result.Succeeded)
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var link = $"https://localhost:7120/api/Users/ConfirmEmail?userId={user.Id}&token={token}";
+                var link = $"https://localhost:3000?userId={user.Id}&token={token}";
                 var template = await ReadTemplateFileAsync("BicardBackend.EmailTemplates.ConfirmEmail.html");
                 template = template.Replace("[CONFIRMATION_LINK]", link);
                 template = template.Replace("[NUMBER]", "1");
@@ -182,7 +182,7 @@ namespace BicardBackend.Controllers
             var result = await _userManager.ConfirmEmailAsync(user, token);
             if (result.Succeeded)
             {
-                return Redirect("https://www.youtube.com/");
+                return Ok("Email confirmation successful.");
             }
 
             return BadRequest(string.Join(",", result.Errors.Select(e => e.Description))); // Return validation errors
