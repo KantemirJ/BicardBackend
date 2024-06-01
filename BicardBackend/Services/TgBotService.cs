@@ -1,4 +1,5 @@
 ﻿using Telegram.Bot;
+using Telegram.Bot.Types;
 
 namespace BicardBackend.Services;
 
@@ -16,4 +17,18 @@ public class TgBotService : ITgBotService
     {
         await client.SendTextMessageAsync(chatId, message);
     }
+    public async Task SendPdfAsync(string filePath)
+    {
+        if (!System.IO.File.Exists(filePath))
+        {
+            throw new ArgumentException($"PDF file not found: {filePath}");
+        }
+
+        using (var fileStream = System.IO.File.OpenRead(filePath))
+        {
+            await client.SendDocumentAsync(chatId, new InputFileStream(fileStream, Path.GetFileName(filePath)), cancellationToken: CancellationToken.None);
+        }
+    }
+
+
 }

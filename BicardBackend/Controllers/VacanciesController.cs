@@ -13,10 +13,12 @@ namespace BicardBackend.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ITgBotService _tgBotService;
-        public VacanciesController(ApplicationDbContext context, ITgBotService tgBotService)
+        private readonly IFileService _fileService;
+        public VacanciesController(ApplicationDbContext context, ITgBotService tgBotService, IFileService fileService)
         {
             _context = context;
             _tgBotService = tgBotService;
+            _fileService = fileService;
         }
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
@@ -30,6 +32,20 @@ namespace BicardBackend.Controllers
             var vacancy = await _context.Vacancies.Where(a => a.Id == id).FirstOrDefaultAsync();
             return Ok(vacancy);
         }
+        [HttpPost("Response")]
+        public async Task<IActionResult> Response(IFormFile file)
+        {
+            try
+            {
+                var pathToFile = await _fileService.SaveFileAsync(file, "ResponsesToVacancies");
+                await _tgBotService.SendPdfAsync(Path.Combine("C:\\Temp", pathToFile));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return Ok();
+        }
         [HttpPost("Create")]
         public async Task<IActionResult> Create(VacancyDto dto)
         {
@@ -39,7 +55,6 @@ namespace BicardBackend.Controllers
                 Requirements = dto.Requirements,
                 Description = dto.Description
             };
-            _tgBotService.SendMessageAsync($"A new vacancy is created. Position: {newVacancy.Position}");
             _context.Vacancies.Add(newVacancy);
             await _context.SaveChangesAsync();
             return Ok(newVacancy);
