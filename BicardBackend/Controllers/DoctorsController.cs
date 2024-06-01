@@ -230,7 +230,7 @@ namespace BicardBackend.Controllers
                 .Where(a => a.DoctorId == id)
                 .Select(a => new 
                 {
-                    DayOfWeek = GetRussianDayOfWeekName(a.DayOfWeek), 
+                    a.DayOfWeek, 
                     a.StartTime, 
                     a.EndTime 
                 })
