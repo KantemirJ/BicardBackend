@@ -161,7 +161,7 @@ namespace BicardBackend.Controllers
                     .Where(a => a.Date.Date == currentDay.Date && a.DoctorId == doctorId)
                     .Select(a => a.Date.ToString("HH:mm"))
                     .ToList();
-                var timeslots = GenerateTimeSlotsWithStatus(schedule?.StartTime ?? null, schedule?.EndTime ?? null, 30, appointments);
+                var timeslots = GenerateTimeSlotsWithStatus(schedule?.StartTime ?? "00:00", schedule?.EndTime ?? "00:00", 30, appointments);
                 // Add time slot object for current day
                 timeTable.Add(new
                 {
