@@ -54,9 +54,9 @@ namespace Bicard.Controllers
         }
         [HttpGet("GetListOfAppointments")]
         //[Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetListOfAppointments(int doctorId)
+        public async Task<IActionResult> GetListOfAppointments()
         {
-            var list = await _context.Appointments.Where(a => a.DoctorId == doctorId).ToListAsync();
+            var list = await _context.Appointments.ToListAsync();
             return Ok(list);
         }
         [HttpGet("GetUnconfirmedAppointments")]

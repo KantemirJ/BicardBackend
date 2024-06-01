@@ -48,10 +48,10 @@ namespace BicardBackend.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
-        [HttpPost("Update")]
-        public async Task<IActionResult> Update(ScheduleDto dto)
+        [HttpPut("Update")]
+        public async Task<IActionResult> Update(int id, ScheduleDto dto)
         {
-            var schedule = _context.Schedules.FirstOrDefault(a => a.Id == dto.Id);
+            var schedule = _context.Schedules.FirstOrDefault(a => a.Id == id);
             if (schedule == null)
             {
                 return BadRequest("Not Found");
@@ -62,6 +62,16 @@ namespace BicardBackend.Controllers
             schedule.DoctorId = dto.DoctorId;
             await _context.SaveChangesAsync();
             return Ok();
+        }
+        [HttpPut("Gets")]
+        public async Task<IActionResult> Gets(int id)
+        {
+            var schedule = _context.Schedules.FirstOrDefault(a => a.Id == id);
+            if (schedule == null)
+            {
+                return BadRequest("Not Found");
+            }
+            return Ok(schedule);
         }
         [HttpPost("Delete")]
         public async Task<IActionResult> Delete(int id)
@@ -166,7 +176,7 @@ namespace BicardBackend.Controllers
                 timeTable.Add(new
                 {
                     Date = currentDay,
-                    dayOfWeek,
+                    schedule?.DayOfWeek,
                     startTime = schedule?.StartTime ?? null, // Handle null schedule
                     endTime = schedule?.EndTime ?? null,
                     timeslots
