@@ -78,21 +78,17 @@ namespace BicardBackend.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] Login model)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return Unauthorized(new { Message = "Invalid login attempt" });
+            }
+            var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, false, false);
 
             if (result.Succeeded)
             {
-                // You may customize the response based on your needs
-                var user = await _userManager.FindByNameAsync(model.UserName);
                 var accessToken = _jwtService.GenerateAccessToken(user);
-                //Response.Cookies.Append("Bicard-Web-API-Access-Token", accessToken.Result, new CookieOptions()
-                //{
-                //    HttpOnly = true,
-                //    SameSite = SameSiteMode.None,
-                //    Secure = true,
-                //    MaxAge = TimeSpan.FromSeconds(120)
-                //});
-                // Get the user's roles from the UserRoles table
+                
                 var roleIds = await _context.UserRoles
                     .Where(ur => ur.UserId == user.Id)
                     .Select(ur => ur.RoleId)
@@ -201,7 +197,7 @@ namespace BicardBackend.Controllers
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var template = await ReadTemplateFileAsync("BicardBackend.EmailTemplates.ResetPassword.html");
-                var link = $"https://localhost:3000/reset-password?userEmail={user.Email}&token={token}";
+                var link = $"http://localhost:3000/reset-password?userEmail={user.Email}&token={token}";
                 template = template.Replace("[LINK]", link);
                 template = template.Replace("[HOURS]", "1");
                 template = template.Replace("[NAME]", user.UserName);
