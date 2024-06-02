@@ -63,7 +63,7 @@ namespace BicardBackend.Controllers
             if (user != null)
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var link = $"https://localhost:7120/api/Users/ConfirmEmail?userId={user.Id}&token={token}";
+                var link = $"https://localhost:3000/confirm-email?userId={user.Id}&token={token}";
                 var template = await ReadTemplateFileAsync("BicardBackend.EmailTemplates.ConfirmEmail.html");
                 template = template.Replace("[CONFIRMATION_LINK]", link);
                 template = template.Replace("[NUMBER]", "1");
@@ -201,7 +201,8 @@ namespace BicardBackend.Controllers
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var template = await ReadTemplateFileAsync("BicardBackend.EmailTemplates.ResetPassword.html");
-                template = template.Replace("[TOKEN]", token);
+                var link = $"https://localhost:3000/reset-password?userEmail={user.Email}&token={token}";
+                template = template.Replace("[LINK]", link);
                 template = template.Replace("[HOURS]", "1");
                 template = template.Replace("[NAME]", user.UserName);
                 _emailService.Send(email, "Сброс пароля для веб приложения клиники Бикард", template);

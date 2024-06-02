@@ -59,13 +59,26 @@ namespace Bicard.Controllers
             var list = await _context.Appointments.Where(a => a.IsConfirmed == false).ToListAsync();
             return Ok(list);
         }
-        [HttpGet("GetconfirmedAppointments")]
-        public async Task<IActionResult> GetconfirmedAppointments()
+        [HttpGet("GetConfirmedAppointments")]
+        public async Task<IActionResult> GetConfirmedAppointments()
         {
             var list = await _context.Appointments.Where(a => a.IsConfirmed == true).ToListAsync();
             return Ok(list);
         }
-        
+        [HttpGet("GetListOfAppointmentsByDoctorId")]
+        //[Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetListOfAppointmentsByDoctorId(int id)
+        {
+            var list = await _context.Appointments.Where(a => a.IsConfirmed == false && a.DoctorId == id).ToListAsync();
+            return Ok(list);
+        }
+        [HttpGet("GetConfirmedAppointmentsByDoctorId")]
+        public async Task<IActionResult> GetconfirmedAppointmentsByDoctorId(int id)
+        {
+            var list = await _context.Appointments.Where(a => a.IsConfirmed == true && a.DoctorId == id).ToListAsync();
+            return Ok(list);
+        }
+
         [HttpPut("ConfirmAppointment/{id}")]
         //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> ConfirmAppointment(int id, AppointmentDto model)
