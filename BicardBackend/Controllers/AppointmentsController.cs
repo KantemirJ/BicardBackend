@@ -36,7 +36,7 @@ namespace Bicard.Controllers
                 {
                     Name = model.Name,
                     Email = model.Email,
-                    PhoneNumber = model.PhoneNumber,
+                    PhoneNumber = model.PhoneNumber,    
                     Age = model.Age,
                     Date = model.Date,
                     DoctorId = model.DoctorId,
@@ -56,13 +56,13 @@ namespace Bicard.Controllers
         //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetListOfAppointments()
         {
-            var list = await _context.Appointments.ToListAsync();
+            var list = await _context.Appointments.Where(a => a.IsConfirmed == false).ToListAsync();
             return Ok(list);
         }
-        [HttpGet("GetUnconfirmedAppointments")]
-        public async Task<IActionResult> GetUnconfirmedAppointments()
+        [HttpGet("GetconfirmedAppointments")]
+        public async Task<IActionResult> GetconfirmedAppointments()
         {
-            var list = await _context.Appointments.Where(a => a.IsConfirmed == false).ToListAsync();
+            var list = await _context.Appointments.Where(a => a.IsConfirmed == true).ToListAsync();
             return Ok(list);
         }
         
