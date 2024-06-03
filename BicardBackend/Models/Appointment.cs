@@ -10,6 +10,7 @@
         public bool IsConfirmed { get; set; } = false;
         public DateTime Date { get; set; }
         public int DoctorId { get; set; }
+        public int? UserId { get; set; }
         public DateTime TimeStamp { get; set; } = DateTime.UtcNow;
     }
 }
