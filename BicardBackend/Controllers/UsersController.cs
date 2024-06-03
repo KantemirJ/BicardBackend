@@ -150,8 +150,8 @@ namespace BicardBackend.Controllers
             }).ToList();
             return Ok(DtoList);
         }
-        [HttpPost("AddPhoto")]
-        public async Task<IActionResult> AddPhoto(int userId, IFormFile photo)
+        [HttpPost("UpdatePhoto")]
+        public async Task<IActionResult> UpdatePhoto(int userId, IFormFile photo)
         {
             if (photo == null)
             {
@@ -162,9 +162,13 @@ namespace BicardBackend.Controllers
             {
                 return BadRequest();
             }
+            if(user.PhotoPath != null)
+            {
+                _fileService.DeleteFile(user.PhotoPath, "PhotosOfUsers");
+            }
             user.PhotoPath = await _fileService.SaveFileAsync(photo, "PhotosOfUsers");
             await _context.SaveChangesAsync();
-            return Ok(user);
+            return Ok();
         }
         [HttpGet("ConfirmEmail")]
         public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)

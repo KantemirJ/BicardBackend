@@ -38,30 +38,13 @@ namespace BicardBackend.Services
 
             return tempPath.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         }
-        public async Task<string> ConvertFileToBase64(string filePath)
+        public void DeleteFile(string path, string subFolder)
         {
             try
             {
-                string uploadsFolder = "C:\\Temp";
-                byte[] fileBytes = await System.IO.File.ReadAllBytesAsync(Path.Combine(uploadsFolder, filePath));
-
-                string base64String = Convert.ToBase64String(fileBytes);
-
-                return base64String;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error converting file to base64: {ex.Message}");
-                return null;
-            }
-        }
-        public void DeleteFile(string path)
-        {
-            try
-            {
-                if (System.IO.File.Exists(Path.Combine(path)))
+                if (System.IO.File.Exists(Path.Combine(path, subFolder)))
                 {
-                    System.IO.File.Delete(Path.Combine(path));
+                    System.IO.File.Delete(Path.Combine(path, subFolder));
                     Console.WriteLine("File deleted.");
                 }
                 else Console.WriteLine("File not found");
