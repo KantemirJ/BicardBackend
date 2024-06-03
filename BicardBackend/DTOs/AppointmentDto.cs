@@ -8,5 +8,6 @@
         public string Age { get; set; }
         public DateTime Date { get; set; }
         public int DoctorId { get; set; }
+        public int? UserId { get; set; }
     }
 }

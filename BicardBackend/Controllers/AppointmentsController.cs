@@ -40,6 +40,7 @@ namespace Bicard.Controllers
                     Age = model.Age,
                     Date = model.Date,
                     DoctorId = model.DoctorId,
+                    UserId = model.UserId
                 };
                 await _context.Appointments.AddAsync(appointment);
                 await _context.SaveChangesAsync();
