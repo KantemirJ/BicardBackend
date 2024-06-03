@@ -43,14 +43,16 @@ namespace BicardBackend.Controllers
             if (result.Succeeded)
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var link = $"https://localhost:3000/confirm-email?userId={user.Id}&token={token}";
+                Random rnd = new Random();
+                int number = rnd.Next(100000, 1000000);
+                var code = number.ToString("D6");
                 var template = await ReadTemplateFileAsync("BicardBackend.EmailTemplates.ConfirmEmail.html");
-                template = template.Replace("[CONFIRMATION_LINK]", link);
+                template = template.Replace("[CODE]", code);
                 template = template.Replace("[NUMBER]", "1");
                 template = template.Replace("[NAME]", user.UserName);
 
                 _emailService.Send(model.Email, "Подтвердите Ваш электронный адрес", template);
-                return Ok(new { Message = "User registered successfully" });
+                return Ok(new { ConfirmationToken = token, code, user.Id });
             }
 
             return BadRequest(new { result.Errors });
@@ -63,13 +65,16 @@ namespace BicardBackend.Controllers
             if (user != null)
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var link = $"https://localhost:7120/api/Users/ConfirmEmail?userId={user.Id}&token={token}";
+                Random rnd = new Random();
+                int number = rnd.Next(100000, 1000000);
+                var code = number.ToString("D6");
                 var template = await ReadTemplateFileAsync("BicardBackend.EmailTemplates.ConfirmEmail.html");
-                template = template.Replace("[CONFIRMATION_LINK]", link);
+                template = template.Replace("[CODE]", code);
                 template = template.Replace("[NUMBER]", "1");
+                template = template.Replace("[NAME]", user.UserName);
 
                 _emailService.Send(email, "Подтвердите Ваш электронный адрес", template);
-                return Ok(new { Message = "User registered successfully" });
+                return Ok(new { ConfirmationToken = token, code, user.Id });
             }
 
             return BadRequest("Invalid email address");
@@ -200,13 +205,16 @@ namespace BicardBackend.Controllers
             try
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                Random rnd = new Random();
+                int number = rnd.Next(100000, 1000000);
+                var code = number.ToString("D6");
                 var template = await ReadTemplateFileAsync("BicardBackend.EmailTemplates.ResetPassword.html");
-                template = template.Replace("[TOKEN]", token);
+                template = template.Replace("[CODE]", code);
                 template = template.Replace("[HOURS]", "1");
                 template = template.Replace("[NAME]", user.UserName);
                 _emailService.Send(email, "Сброс пароля для веб приложения клиники Бикард", template);
-                
-                return Ok("Password reset link has been sent to your email.");
+
+                return Ok(new { PasswordResetToken = token, code, user.Email, Message = "Мы отправили код на вашу почту." });
             }
             catch (Exception ex)
             {
@@ -243,6 +251,39 @@ namespace BicardBackend.Controllers
                 // Handle other potential exceptions (e.g., token expiration)
                 return BadRequest("An error occurred while processing your request.");
             }
+        }
+        [HttpGet("GetProfileIfno")]
+        public async Task<IActionResult> GetProfileIfno(int id)
+        {
+            var user = _context.Users.Where(u => u.Id == id).Select(u => new { u.UserName, u.Email, u.PhoneNumber, u.BirthDay, u.Sex, u.PhotoPath, });
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
+        }
+        [HttpPut("UpdateProfileIfno")]
+        public async Task<IActionResult> UpdateProfileIfno([FromQuery] int id,[FromForm] UserProfile dto)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            user.UserName = dto.UserName;
+            user.Email = dto.Email;
+            user.PhoneNumber = dto.PhoneNumber;
+            user.BirthDay = dto.BirthDay;
+            user.Sex = dto.Sex;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return Ok();
         }
         private async Task<string> ReadTemplateFileAsync(string filePath)
         {
