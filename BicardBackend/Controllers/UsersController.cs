@@ -51,7 +51,7 @@ namespace BicardBackend.Controllers
                 template = template.Replace("[NUMBER]", "1");
                 template = template.Replace("[NAME]", user.UserName);
 
-                _emailService.Send(model.Email, "Подтвердите Ваш электронный адрес", template);
+                //_emailService.Send(model.Email, "Подтвердите Ваш электронный адрес", template);
                 return Ok(new { ConfirmationToken = token, code, user.Id });
             }
 
@@ -73,7 +73,7 @@ namespace BicardBackend.Controllers
                 template = template.Replace("[NUMBER]", "1");
                 template = template.Replace("[NAME]", user.UserName);
 
-                _emailService.Send(email, "Подтвердите Ваш электронный адрес", template);
+                //_emailService.Send(email, "Подтвердите Ваш электронный адрес", template);
                 return Ok(new { ConfirmationToken = token, code, user.Id });
             }
 
@@ -212,7 +212,7 @@ namespace BicardBackend.Controllers
                 template = template.Replace("[CODE]", code);
                 template = template.Replace("[HOURS]", "1");
                 template = template.Replace("[NAME]", user.UserName);
-                _emailService.Send(email, "Сброс пароля для веб приложения клиники Бикард", template);
+                //_emailService.Send(email, "Сброс пароля для веб приложения клиники Бикард", template);
 
                 return Ok(new { PasswordResetToken = token, code, user.Email, Message = "Мы отправили код на вашу почту." });
             }
