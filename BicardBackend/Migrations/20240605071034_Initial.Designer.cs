@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BicardBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240525090934_Certificate")]
-    partial class Certificate
+    [Migration("20240605071034_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -59,6 +59,9 @@ namespace BicardBackend.Migrations
 
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -143,6 +146,28 @@ namespace BicardBackend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Certificates");
+                });
+
+            modelBuilder.Entity("BicardBackend.Models.ClinicStats", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("NumberOfBeds")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("NumberOfEmployees")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("NumberOfPatients")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Clinicstats");
                 });
 
             modelBuilder.Entity("BicardBackend.Models.Doctor", b =>
@@ -425,6 +450,9 @@ namespace BicardBackend.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("BirthDay")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
@@ -463,6 +491,9 @@ namespace BicardBackend.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("SecurityStamp")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Sex")
                         .HasColumnType("text");
 
                     b.Property<bool>("TwoFactorEnabled")

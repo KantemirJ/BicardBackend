@@ -448,8 +448,8 @@ namespace BicardBackend.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
-                    b.Property<string>("BirthDay")
-                        .HasColumnType("text");
+                    b.Property<DateTime>("BirthDay")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()

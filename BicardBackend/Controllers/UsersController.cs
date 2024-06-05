@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using BicardBackend.Data;
 using System.Reflection;
 using static System.Net.WebRequestMethods;
+using System.Data;
 
 namespace BicardBackend.Controllers
 {
@@ -255,12 +256,19 @@ namespace BicardBackend.Controllers
         [HttpGet("GetProfileIfno")]
         public async Task<IActionResult> GetProfileIfno(int id)
         {
-            var user = _context.Users.Where(u => u.Id == id).Select(u => new { u.UserName, u.Email, u.PhoneNumber, u.BirthDay, u.Sex, u.PhotoPath, });
+            var user = _context.Users.FirstOrDefault(x => x.Id == id);
             if (user == null)
             {
                 return NotFound();
             }
-            return Ok(user);
+            return Ok(new
+            {
+                user.UserName,
+                user.Email,
+                user.PhoneNumber,
+                Age = DateTime.Now.Year - user.BirthDay.Year,
+                user.Sex
+            });
         }
         [HttpPut("UpdateProfileIfno")]
         public async Task<IActionResult> UpdateProfileIfno([FromQuery] int id,[FromForm] UserProfile dto)
@@ -275,7 +283,7 @@ namespace BicardBackend.Controllers
             user.Email = dto.Email;
             user.NormalizedEmail = dto.Email.ToUpper();
             user.PhoneNumber = dto.PhoneNumber;
-            user.BirthDay = dto.BirthDay.ToString("dd/MM/yyyy");
+            user.BirthDay = dto.BirthDay.ToUniversalTime();
             user.Sex = dto.Sex;
             try
             {
