@@ -275,7 +275,7 @@ namespace BicardBackend.Controllers
             user.Email = dto.Email;
             user.NormalizedEmail = dto.Email.ToUpper();
             user.PhoneNumber = dto.PhoneNumber;
-            user.BirthDay = dto.BirthDay;
+            user.BirthDay = dto.BirthDay.ToString("dd/MM/yyyy");
             user.Sex = dto.Sex;
             try
             {
