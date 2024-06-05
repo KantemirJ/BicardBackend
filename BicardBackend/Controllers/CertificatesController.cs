@@ -51,7 +51,7 @@ namespace BicardBackend.Controllers
             {
                 return BadRequest("Not Found.");
             }
-            _fileService.DeleteFile(cert.PhotoPath);
+            _fileService.DeleteFile(cert.PhotoPath, "Certificates");
             cert.PhotoPath = await _fileService.SaveFileAsync(model.Photo, "Certificates");
             cert.Description = model.Description;
             
@@ -66,7 +66,7 @@ namespace BicardBackend.Controllers
             {
                 return BadRequest("Not Found.");
             }
-            _fileService.DeleteFile(cert.PhotoPath);
+            _fileService.DeleteFile(cert.PhotoPath, "Certificates");
             _context.Certificates.Remove(cert);
 
             await _context.SaveChangesAsync();

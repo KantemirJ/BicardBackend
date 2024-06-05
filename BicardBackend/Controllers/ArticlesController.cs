@@ -71,7 +71,7 @@ namespace BicardBackend.Controllers
             }
             article.Title = dto.Title;
             article.AuthorName = dto.AuthorName;
-            _fileService.DeleteFile(article.FilePath);
+            _fileService.DeleteFile(article.FilePath, "Articles");
             article.FilePath = await _fileService.SaveFileAsync(dto.File, "Articles");
             await _context.SaveChangesAsync();
             return Ok(article);
@@ -84,7 +84,7 @@ namespace BicardBackend.Controllers
             {
                 return BadRequest();
             }
-            _fileService.DeleteFile(article.FilePath);
+            _fileService.DeleteFile(article.FilePath, "Articles");
             _context.Articles.Remove(article);
             await _context.SaveChangesAsync();
             return Ok(article);
