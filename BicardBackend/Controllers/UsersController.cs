@@ -271,7 +271,9 @@ namespace BicardBackend.Controllers
                 return NotFound();
             }
             user.UserName = dto.UserName;
+            user.NormalizedUserName = dto.UserName.ToUpper();
             user.Email = dto.Email;
+            user.NormalizedEmail = dto.Email.ToUpper();
             user.PhoneNumber = dto.PhoneNumber;
             user.BirthDay = dto.BirthDay;
             user.Sex = dto.Sex;
