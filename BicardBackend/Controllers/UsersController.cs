@@ -270,7 +270,7 @@ namespace BicardBackend.Controllers
                 user.Sex
             });
         }
-        [HttpPut("UpdateProfileIfno")]
+        [HttpPost("UpdateProfileIfno")]
         public async Task<IActionResult> UpdateProfileIfno([FromQuery] int id,[FromForm] UserProfile dto)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);

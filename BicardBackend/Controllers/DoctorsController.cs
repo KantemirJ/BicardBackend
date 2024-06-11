@@ -123,22 +123,20 @@ namespace BicardBackend.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> Update([FromForm] DoctorDto doctorDto, int id)
         {
-            //var doctor = _mapper.Map<Doctor>(doctorDto);
-            Doctor doctor = new()
+            var doctor = _context.Doctors.FirstOrDefault(x => x.Id == id);
+            if (doctor == null)
             {
-                Id = id,
-                Name = doctorDto.Name,
-                Speciality = doctorDto.Speciality,
-                Bio = doctorDto.Bio,
-                Education = doctorDto.Education,
-                Experience = doctorDto.Experience,
-                PathToPhoto = await _fileService.SaveFileAsync(doctorDto.Photo, "PhotosOfDoctors"),
-                PhoneNumber = doctorDto.PhoneNumber,
-                Email = doctorDto.Email,
-                Address = doctorDto.Address,
-                UserId = doctorDto.UserId,
-            };
-            _context.Entry(doctor).State = EntityState.Modified;
+                return BadRequest("Not found.");
+            }
+            doctor.Name = doctorDto.Name;
+            doctor.Speciality = doctorDto.Speciality;
+            doctor.Bio = doctorDto.Bio;
+            doctor.Education = doctorDto.Education;
+            doctor.Experience = doctorDto.Experience;
+            doctor.PhoneNumber = doctorDto.PhoneNumber;
+            doctor.Email = doctorDto.Email;
+            doctor.Address = doctorDto.Address;
+            doctor.UserId = doctorDto.UserId;
             await _context.SaveChangesAsync();
             return Ok("Doctor updated successfully");
         }
