@@ -120,6 +120,45 @@ namespace BicardBackend.Controllers
 
             return Unauthorized(new { Message = "Invalid login attempt" });
         }
+        [HttpPost("LoginWeb")]
+        public async Task<IActionResult> LoginWeb([FromBody] LoginWeb model)
+        {
+            var user = await _userManager.FindByNameAsync(model.UserName);
+            if (user == null)
+            {
+                return Unauthorized(new { Message = "Invalid login attempt" });
+            }
+            var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, false, false);
+
+            if (result.Succeeded)
+            {
+                var accessToken = _jwtService.GenerateAccessToken(user);
+
+                var roleIds = await _context.UserRoles
+                    .Where(ur => ur.UserId == user.Id)
+                    .Select(ur => ur.RoleId)
+                    .ToListAsync();
+
+                // Get the role names based on role IDs
+                var roleNames = await _context.Roles
+                    .Where(r => roleIds.Contains(r.Id))
+                    .Select(r => r.Name)
+                    .ToListAsync();
+
+                // For simplicity, assuming the user has only one role (modify as needed)
+                string roleName = roleNames.FirstOrDefault();
+                return Ok(new
+                {
+                    userId = user.Id,
+                    roleName = roleName,
+                    userName = user.UserName,
+                    accessToken = accessToken.Result,
+                    Message = "Login successful"
+                });
+            }
+
+            return Unauthorized(new { Message = "Invalid login attempt" });
+        }
         [HttpDelete]
         public async Task<IActionResult> DeleteUser(string id)
         {
