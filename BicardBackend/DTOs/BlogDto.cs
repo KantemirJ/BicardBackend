@@ -6,7 +6,7 @@
         public string Title { get; set; }
         public string Text { get; set; }
         public int AuthorId { get; set; }
-        public IFormFile Photo { get; set; }
+        public IFormFile? Photo { get; set; }
 
     }
 }

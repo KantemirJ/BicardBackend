@@ -79,13 +79,13 @@ namespace BicardBackend.Controllers
             return Ok(newBlog);
         }
         [HttpPut("Update")]
-        public async Task<IActionResult> Update(int id, [FromForm] BlogDto dto)
+        public async Task<IActionResult> Update([FromForm] BlogDto dto)
         {
             if (dto == null)
             {
                 return BadRequest();
             }
-            var blog = _context.Blogs.Find(id);
+            var blog = _context.Blogs.Find(dto.Id);
             if (blog == null)
             {
                 return NotFound();
@@ -95,7 +95,10 @@ namespace BicardBackend.Controllers
             blog.Text = dto.Text;
             blog.Timestamp = DateTime.UtcNow;
             blog.AuthorId = dto.AuthorId;
-            blog.PhotoPath = await _fileService.SaveFileAsync(dto.Photo, "PhotosOfBlogs");
+            if (dto.Photo != null)
+            {
+                blog.PhotoPath = await _fileService.SaveFileAsync(dto.Photo, "PhotosOfBlogs");
+            }
             await _context.SaveChangesAsync();
             return Ok(blog);
         }

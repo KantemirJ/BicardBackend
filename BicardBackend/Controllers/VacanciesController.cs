@@ -43,7 +43,7 @@ namespace BicardBackend.Controllers
             try
             {
                 var pathToFile = await _fileService.SaveFileAsync(file, "ResponsesToVacancies");
-                await _tgBotService.SendMessageAsync($"Отклик на вакансию с ID {vacancy.Id} на позицию \"{vacancy.Position}\"");
+                await _tgBotService.SendMessageAsync($"Отклик на позицию \"{vacancy.Position}\"");
                 await _tgBotService.SendPdfAsync(Path.Combine("C:\\Temp", pathToFile));
             }
             catch (Exception ex)
