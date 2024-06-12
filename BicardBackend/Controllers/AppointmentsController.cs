@@ -79,8 +79,8 @@ namespace Bicard.Controllers
             var list = await _context.Appointments.Where(a => a.IsConfirmed == true && a.DoctorId == id).ToListAsync();
             return Ok(list);
         }
-        [HttpGet("GetConfirmedAppointmentsByUserId")]
-        public async Task<IActionResult> GetConfirmedAppointmentsByUserId(int id)
+        [HttpGet("GetAppointmentsByUserId")]
+        public async Task<IActionResult> GetAppointmentsByUserId(int id)
         {
             var list = await _context.Appointments.Where(a => a.UserId == id).ToListAsync();
             List<UserAppointment> response = new List<UserAppointment>();
@@ -96,6 +96,7 @@ namespace Bicard.Controllers
                 userAppointment.DoctorName = doctor.Name;
                 userAppointment.DoctorSpeciality = doctor.Speciality;
                 userAppointment.AppointmentDate = item.Date.ToString("dd.MM.yyyy HH:mm");
+                userAppointment.IsConfirmed = item.IsConfirmed;
                 response.Add(userAppointment);
             }
 
