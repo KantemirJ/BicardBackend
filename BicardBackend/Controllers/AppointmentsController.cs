@@ -83,8 +83,23 @@ namespace Bicard.Controllers
         public async Task<IActionResult> GetConfirmedAppointmentsByUserId(int id)
         {
             var list = await _context.Appointments.Where(a => a.UserId == id).ToListAsync();
+            List<UserAppointment> response = new List<UserAppointment>();
+            foreach (var item in list)
+            {
+                UserAppointment userAppointment = new UserAppointment();
+                var doctor = _context.Doctors.FirstOrDefault(a => a.Id == item.DoctorId);
+                if(doctor == null)
+                {
+                    return BadRequest("Doctor not found.");
+                }
+                userAppointment.DoctorPhoto = doctor.PathToPhoto;
+                userAppointment.DoctorName = doctor.Name;
+                userAppointment.DoctorSpeciality = doctor.Speciality;
+                userAppointment.AppointmentDate = item.Date.ToString("dd.MM.yyyy HH:mm");
+                response.Add(userAppointment);
+            }
 
-            return Ok(list);
+            return Ok(response);
         }
 
         [HttpPut("ConfirmAppointment/{id}")]
