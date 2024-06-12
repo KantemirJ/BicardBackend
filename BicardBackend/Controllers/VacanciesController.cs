@@ -33,11 +33,17 @@ namespace BicardBackend.Controllers
             return Ok(vacancy);
         }
         [HttpPost("Response")]
-        public async Task<IActionResult> Response(IFormFile file)
+        public async Task<IActionResult> Response([FromQuery]int vacancyId, IFormFile file)
         {
+            var vacancy = _context.Vacancies.FirstOrDefault(v => v.Id == vacancyId);
+            if (vacancy == null)
+            {
+                return BadRequest("Not Found.");
+            }
             try
             {
                 var pathToFile = await _fileService.SaveFileAsync(file, "ResponsesToVacancies");
+                await _tgBotService.SendMessageAsync($"Отклик на вакансию с ID {vacancy.Id} на позицию \"{vacancy.Position}\"");
                 await _tgBotService.SendPdfAsync(Path.Combine("C:\\Temp", pathToFile));
             }
             catch (Exception ex)

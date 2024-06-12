@@ -203,6 +203,13 @@ namespace BicardBackend.Controllers
                 TimeSpan currentTime = startTimeSpan;
                 while (currentTime < endTimeSpan)
                 {
+                    // Check if current time is within lunch break
+                    if (currentTime.Hours >= 12 && currentTime.Hours < 13)
+                    {
+                        currentTime = currentTime.Add(TimeSpan.FromHours(1)); // Skip to next hour after lunch
+                        continue;
+                    }
+
                     TimeSpan nextTime = currentTime.Add(TimeSpan.FromMinutes(timeInterval));
                     string timeSlot = $"{currentTime:hh\\:mm}";
                     string status = appointments.Contains(timeSlot) ? "booked" : "available"; // Null-coalescing for appointments list
@@ -217,5 +224,6 @@ namespace BicardBackend.Controllers
                 throw new ArgumentException("Start time and end time must be in HH:MM format.");
             }
         }
+
     }
 }
