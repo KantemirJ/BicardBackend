@@ -204,7 +204,7 @@ namespace BicardBackend.Controllers
             }
             if(user.PhotoPath != null)
             {
-                _fileService.DeleteFile(user.PhotoPath, "PhotosOfUsers");
+                _fileService.DeleteFile(user.PhotoPath);
             }
             user.PhotoPath = await _fileService.SaveFileAsync(photo, "PhotosOfUsers");
             await _context.SaveChangesAsync();

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Numerics;
 using System.Security.Claims;
 
 namespace BicardBackend.Controllers
@@ -97,6 +98,7 @@ namespace BicardBackend.Controllers
             blog.AuthorId = dto.AuthorId;
             if (dto.Photo != null)
             {
+                _fileService.DeleteFile(blog.PhotoPath);
                 blog.PhotoPath = await _fileService.SaveFileAsync(dto.Photo, "PhotosOfBlogs");
             }
             await _context.SaveChangesAsync();

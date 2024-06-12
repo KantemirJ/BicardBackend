@@ -51,14 +51,9 @@ namespace BicardBackend.Controllers
                     doctor.Id,
                     doctor.Name,
                     doctor.Speciality,
-                    doctor.Bio,
                     doctor.Education,
                     doctor.Experience,
-                    doctor.PathToPhoto,
-                    doctor.PhoneNumber,
-                    doctor.Email,
-                    doctor.Address,
-                    doctor.UserId,
+                    doctor.PathToPhoto
                 };
             });
 
@@ -80,13 +75,9 @@ namespace BicardBackend.Controllers
                 Id = id,
                 doctor.Name,
                 doctor.Speciality,
-                doctor.Bio,
                 doctor.Education,
                 doctor.Experience,
                 doctor.PathToPhoto,
-                doctor.PhoneNumber,
-                doctor.Email,
-                doctor.Address,
                 doctor.UserId,
             };  
 
@@ -105,13 +96,9 @@ namespace BicardBackend.Controllers
             {
                 Name = doctorDto.Name,
                 Speciality = doctorDto.Speciality,
-                Bio = doctorDto.Bio,
                 Education = doctorDto.Education,
                 Experience = doctorDto.Experience,
                 PathToPhoto =  await _fileService.SaveFileAsync(doctorDto.Photo, "PhotosOfDoctors"),
-                PhoneNumber = doctorDto.PhoneNumber,
-                Email = doctorDto.Email,
-                Address = doctorDto.Address,
                 UserId = doctorDto.UserId,
             };
 
@@ -130,13 +117,14 @@ namespace BicardBackend.Controllers
             }
             doctor.Name = doctorDto.Name;
             doctor.Speciality = doctorDto.Speciality;
-            doctor.Bio = doctorDto.Bio;
             doctor.Education = doctorDto.Education;
             doctor.Experience = doctorDto.Experience;
-            doctor.PhoneNumber = doctorDto.PhoneNumber;
-            doctor.Email = doctorDto.Email;
-            doctor.Address = doctorDto.Address;
             doctor.UserId = doctorDto.UserId;
+            if(doctorDto.Photo != null)
+            {
+                _fileService.DeleteFile(doctor.PathToPhoto);
+                doctor.PathToPhoto = await _fileService.SaveFileAsync(doctorDto.Photo, "PhotosOfDoctors");
+            }
             await _context.SaveChangesAsync();
             return Ok("Doctor updated successfully");
         }
@@ -176,14 +164,10 @@ namespace BicardBackend.Controllers
                     doctor.Id,
                     doctor.Name,
                     doctor.Speciality,
-                    doctor.Bio,
                     doctor.Education,
                     doctor.Experience,
                     doctor.PathToPhoto,
-                    doctor.PhoneNumber,
-                    doctor.Email,
-                    doctor.Address,
-                    doctor.UserId,
+                    doctor.UserId
                 };
             });
 
@@ -205,14 +189,10 @@ namespace BicardBackend.Controllers
                     doctor.Id,
                     doctor.Name,
                     doctor.Speciality,
-                    doctor.Bio,
                     doctor.Education,
                     doctor.Experience,
                     doctor.PathToPhoto,
-                    doctor.PhoneNumber,
-                    doctor.Email,
-                    doctor.Address,
-                    doctor.UserId,
+                    doctor.UserId
                 };
             });
 

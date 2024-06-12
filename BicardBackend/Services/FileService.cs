@@ -5,12 +5,10 @@ namespace BicardBackend.Services
 {
     public class FileService : IFileService
     {
-
+        private readonly string uploadsFolder = "C:\\Temp";
         public async Task<string> SaveFileAsync(IFormFile file, string subFolder)
         {
-            // Define the folder where you want to store the files
-            string uploadsFolder = "C:\\Temp";
-
+            
             // Ensure the "Uploads" folder exists; create it if it doesn't
             if (!Directory.Exists(uploadsFolder))
             {
@@ -38,13 +36,14 @@ namespace BicardBackend.Services
 
             return tempPath.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         }
-        public void DeleteFile(string path, string subFolder)
+        public void DeleteFile(string path)
         {
+            var fullPath = Path.Combine(uploadsFolder, path);
             try
             {
-                if (System.IO.File.Exists(Path.Combine(path, subFolder)))
+                if (System.IO.File.Exists(fullPath))
                 {
-                    System.IO.File.Delete(Path.Combine(path, subFolder));
+                    System.IO.File.Delete(fullPath);
                     Console.WriteLine("File deleted.");
                 }
                 else Console.WriteLine("File not found");
