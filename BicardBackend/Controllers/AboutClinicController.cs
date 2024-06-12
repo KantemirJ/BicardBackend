@@ -25,6 +25,12 @@ namespace BicardBackend.Controllers
             var stats = await _context.AboutClinic.ToListAsync();
             return Ok(stats);
         }
+        [HttpGet("GetOne")]
+        public async Task<IActionResult> GetOne(int id)
+        {
+            var stats = await _context.AboutClinic.Where(a => a.Id == id).FirstOrDefaultAsync();
+            return Ok(stats);
+        }
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromForm] AboutClinicDto model)
         {
