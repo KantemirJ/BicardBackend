@@ -190,6 +190,7 @@ namespace BicardBackend.Controllers
             }).ToList();
             return Ok(DtoList);
         }
+        
         [HttpPost("UpdatePhoto")]
         public async Task<IActionResult> UpdatePhoto(int userId, IFormFile photo)
         {
@@ -306,7 +307,8 @@ namespace BicardBackend.Controllers
                 user.Email,
                 user.PhoneNumber,
                 Age = DateTime.Now.Year - user.BirthDay.Year,
-                user.Sex
+                user.Sex,
+                user.PhotoPath
             });
         }
         [HttpPost("UpdateProfileIfno")]
