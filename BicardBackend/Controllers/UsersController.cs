@@ -9,6 +9,7 @@ using BicardBackend.Data;
 using System.Reflection;
 using static System.Net.WebRequestMethods;
 using System.Data;
+using System.Text;
 
 namespace BicardBackend.Controllers
 {
@@ -45,6 +46,10 @@ namespace BicardBackend.Controllers
             {
                 await _userManager.AddToRoleAsync(user, "Patient");
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                //string encodedToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(token))
+                //                                .Replace('+', '-')  // Replace '+' with '-' for URL compatibility
+                //                                .Replace('/', '_'); // Replace '/' with '_' for URL compatibility
+
                 Random rnd = new Random();
                 int number = rnd.Next(100000, 1000000);
                 var code = number.ToString("D6");
