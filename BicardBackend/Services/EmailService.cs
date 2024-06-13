@@ -3,12 +3,14 @@ using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
+using System.Reflection;
 
 namespace BicardBackend.Services;
 
 public interface IEmailService
 {
     void Send(string to, string subject, string html);
+    Task<string> ReadTemplateFileAsync(string filePath);
 }
 
 public class EmailService : IEmailService
@@ -36,5 +38,20 @@ public class EmailService : IEmailService
         smtp.Authenticate(_appSettings.SmtpUser, _appSettings.SmtpPass);
         smtp.Send(email);
         smtp.Disconnect(true);
+    }
+    public async Task<string> ReadTemplateFileAsync(string filePath)
+    {
+        using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(filePath))
+        {
+            if (stream == null)
+            {
+                throw new FileNotFoundException($"Email template not found: {filePath}");
+            }
+
+            using (var reader = new StreamReader(stream))
+            {
+                return await reader.ReadToEndAsync();
+            }
+        }
     }
 }

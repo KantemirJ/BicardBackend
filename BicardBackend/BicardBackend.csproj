@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="EmailTemplates\AppointmentConfirmation.html" />
     <None Remove="EmailTemplates\ConfirmEmail.html" />
     <None Remove="EmailTemplates\ResetPassword.html" />
   </ItemGroup>
@@ -38,6 +39,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="EmailTemplates\AppointmentConfirmation.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="EmailTemplates\ConfirmEmail.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>

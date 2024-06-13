@@ -9,6 +9,7 @@ using BicardBackend.Data;
 using System.Reflection;
 using static System.Net.WebRequestMethods;
 using System.Data;
+using System.Text;
 
 namespace BicardBackend.Controllers
 {
@@ -43,11 +44,16 @@ namespace BicardBackend.Controllers
 
             if (result.Succeeded)
             {
+                await _userManager.AddToRoleAsync(user, "Patient");
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                //string encodedToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(token))
+                //                                .Replace('+', '-')  // Replace '+' with '-' for URL compatibility
+                //                                .Replace('/', '_'); // Replace '/' with '_' for URL compatibility
+
                 Random rnd = new Random();
                 int number = rnd.Next(100000, 1000000);
                 var code = number.ToString("D6");
-                var template = await ReadTemplateFileAsync("BicardBackend.EmailTemplates.ConfirmEmail.html");
+                var template = await _emailService.ReadTemplateFileAsync("BicardBackend.EmailTemplates.ConfirmEmail.html");
                 template = template.Replace("[CODE]", code);
                 template = template.Replace("[NUMBER]", "1");
                 template = template.Replace("[NAME]", user.UserName);
@@ -69,7 +75,7 @@ namespace BicardBackend.Controllers
                 Random rnd = new Random();
                 int number = rnd.Next(100000, 1000000);
                 var code = number.ToString("D6");
-                var template = await ReadTemplateFileAsync("BicardBackend.EmailTemplates.ConfirmEmail.html");
+                var template = await _emailService.ReadTemplateFileAsync("BicardBackend.EmailTemplates.ConfirmEmail.html");
                 template = template.Replace("[CODE]", code);
                 template = template.Replace("[NUMBER]", "1");
                 template = template.Replace("[NAME]", user.UserName);
@@ -249,7 +255,7 @@ namespace BicardBackend.Controllers
                 Random rnd = new Random();
                 int number = rnd.Next(100000, 1000000);
                 var code = number.ToString("D6");
-                var template = await ReadTemplateFileAsync("BicardBackend.EmailTemplates.ResetPassword.html");
+                var template = await _emailService.ReadTemplateFileAsync("BicardBackend.EmailTemplates.ResetPassword.html");
                 template = template.Replace("[CODE]", code);
                 template = template.Replace("[HOURS]", "1");
                 template = template.Replace("[NAME]", user.UserName);
@@ -336,20 +342,6 @@ namespace BicardBackend.Controllers
             }
             return Ok();
         }
-        private async Task<string> ReadTemplateFileAsync(string filePath)
-        {
-            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(filePath))
-            {
-                if (stream == null)
-                {
-                    throw new FileNotFoundException($"Email template not found: {filePath}");
-                }
-
-                using (var reader = new StreamReader(stream))
-                {
-                    return await reader.ReadToEndAsync();
-                }
-            }
-        }
+        
     }
 }
