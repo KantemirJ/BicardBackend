@@ -1,6 +1,7 @@
 ﻿using BicardBackend.Data;
 using BicardBackend.DTOs;
 using BicardBackend.Models;
+using BicardBackend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Globalization;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
+using Telegram.Bot.Types;
 
 namespace Bicard.Controllers
 {
@@ -17,11 +20,13 @@ namespace Bicard.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<AppointmentsController> _logger;
+        private readonly IEmailService _emailService;
         
-        public AppointmentsController(ApplicationDbContext context, ILogger<AppointmentsController> logger) 
+        public AppointmentsController(ApplicationDbContext context, ILogger<AppointmentsController> logger, IEmailService emailService) 
         {
             _context = context;
             _logger = logger;
+            _emailService = emailService;
         }
         [HttpPost("Create")]
         public async Task<IActionResult> Create(AppointmentDto model)
@@ -112,6 +117,11 @@ namespace Bicard.Controllers
             {
                 return NotFound();
             }
+            var doctor = _context.Doctors.SingleOrDefault(x => x.Id == appointment.DoctorId);
+            if (doctor == null)
+            {
+                return BadRequest("Doctor not found.");
+            }
             appointment.Name = model.Name;
             appointment.Email = model.Email;
             appointment.PhoneNumber = model.PhoneNumber;
@@ -120,6 +130,12 @@ namespace Bicard.Controllers
             appointment.DoctorId = model.DoctorId;
             appointment.IsConfirmed = true;
             await _context.SaveChangesAsync();
+            var template = await _emailService.ReadTemplateFileAsync("BicardBackend.EmailTemplates.AppointmentConfirmation.html");
+            template = template.Replace("[Patient Name]", appointment.Name);
+            template = template.Replace("[Doctor Name]", doctor.Name);
+            template = template.Replace("[Date]", appointment.Date.ToString("dd.MM.yyyy"));
+            template = template.Replace("[Time]", appointment.Date.ToString("HH:mm"));
+            _emailService.Send(appointment.Email, "Статус встречи", template);
             return Ok("Appointment confirmed successfully.");
         }
         [HttpDelete("Cancel")]
