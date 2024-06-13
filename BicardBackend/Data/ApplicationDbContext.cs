@@ -18,7 +18,6 @@ namespace BicardBackend.Data
         public DbSet<SubMedServiceDoctor> SubsDoctors { get;set; }
         public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<Schedule> Schedules { get; set; }
-        public DbSet<Models.File> Files { get; set; }
         public DbSet<Faq> Faqs { get; set; }
         public DbSet<Vacancy> Vacancies { get; set; }
         public DbSet<Blog> Blogs { get; set; }

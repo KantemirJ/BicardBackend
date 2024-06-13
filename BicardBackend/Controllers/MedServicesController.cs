@@ -67,24 +67,14 @@ namespace BicardBackend.Controllers
                 {
                     Name = dto.Name,
                     ShortDescription = dto.ShortDescription,
-                    LongDescription = dto.LongDescription
+                    LongDescription = dto.LongDescription,
+                    PathToPhoto = await _fileService.SaveFileAsync(dto.Photo, "MedService")
                 };
                 
                 await _context.Meds.AddAsync(model);
+                
                 await _context.SaveChangesAsync();
-                foreach (IFormFile fileDto in dto.Files)
-                {
-                    var file = new Models.File()
-                    {
-                        Name = await _fileService.SaveFileAsync(fileDto, "MedServicesFiles"),
-                        Extention = Path.GetExtension(fileDto.FileName),
-                        Size = fileDto.Length/1024.0,
-                        MedServiceId = model.Id
-                    };
-                    await _context.Files.AddAsync(file);
-                }
-                await _context.SaveChangesAsync();
-                return Ok("MedService created.");
+                return Ok(model);
             }
             return BadRequest("Model state is invalid.");
         }
@@ -106,33 +96,30 @@ namespace BicardBackend.Controllers
             return BadRequest("Model state is invalid.");
         }
         [HttpPut("UpdateMedService")]
-        public async Task<IActionResult> UpdateMedService(int id, [FromForm] MedServiceDto model)
+        public async Task<IActionResult> UpdateMedService([FromQuery] int id, [FromForm] MedServiceDto dto)
         {
             if (ModelState.IsValid)
             {
-                // Step 1: Find the existing entity by its ID
                 var medService = await _context.Meds.FindAsync(id);
 
                 if (medService == null)
                 {
-                    // Step 2: Handle the case where the entity with the given ID is not found
                     return NotFound("MedService not found.");
                 }
-
-                // Step 3: Update the properties of the existing entity
-                _context.Entry(medService).CurrentValues.SetValues(model);
-
-                // Step 4: Set the state to Modified to inform EF that it should consider the entity as modified
-                _context.Entry(medService).State = EntityState.Modified;
-
-                // Step 5: Save changes to the database
+                medService.Name = dto.Name ?? medService.Name;
+                medService.ShortDescription = dto.ShortDescription ?? medService.ShortDescription;
+                medService.LongDescription = dto.LongDescription ?? medService.LongDescription;
+                if (dto.Photo != null) 
+                {
+                    _fileService.DeleteFile(medService.PathToPhoto);
+                    medService.PathToPhoto = await _fileService.SaveFileAsync(dto.Photo, "MedService");
+                }
+                
                 await _context.SaveChangesAsync();
 
-                // Step 6: Return a success response
-                return Ok("MedService updated successfully.");
+                return Ok();
             }
 
-            // Handle the case where the model state is invalid
             return BadRequest("Model state is invalid.");
         }
         [HttpPut("UpdateSubMedService")]
@@ -176,7 +163,7 @@ namespace BicardBackend.Controllers
                 // Step 2: Handle the case where the entity with the given ID is not found
                 return NotFound("MedService not found.");
             }
-
+            _fileService.DeleteFile(medService.PathToPhoto);
             // Step 3: Remove the entity from the DbSet
             _context.Meds.Remove(medService);
 
