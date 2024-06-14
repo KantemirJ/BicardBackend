@@ -38,10 +38,15 @@ namespace BicardBackend.Controllers
             {
                 return BadRequest("Invalid input.");
             }
+            if (model.Photo1 == null || model.Photo2 == null)
+            {
+                return BadRequest("Invalid input.");
+            }
             AboutClinic aboutClinic = new()
             {
                 Intro = model.Intro,
-                PathToPhoto = await _fileService.SaveFileAsync(model.Photo, "AboutClinic"),
+                PathToPhoto1 = await _fileService.SaveFileAsync(model.Photo1, "AboutClinic"),
+                PathToPhoto2 = await _fileService.SaveFileAsync(model.Photo2, "AboutClinic"),
                 NumberOfBeds = model.NumberOfBeds,
                 NumberOfEmployees = model.NumberOfEmployees,
                 NumberOfPatients = model.NumberOfPatients
@@ -62,14 +67,26 @@ namespace BicardBackend.Controllers
             aboutClinic.NumberOfEmployees = model.NumberOfEmployees;
             aboutClinic.NumberOfBeds = model.NumberOfBeds;
             aboutClinic.NumberOfPatients = model.NumberOfPatients;
-            if (model.Photo != null)
+            if (model.Photo1 != null)
             {
                 try 
                 {
-                    _fileService.DeleteFile(aboutClinic.PathToPhoto);
-                    aboutClinic.PathToPhoto = await _fileService.SaveFileAsync(model.Photo, "AboutClinic");
+                    _fileService.DeleteFile(aboutClinic.PathToPhoto1);
+                    aboutClinic.PathToPhoto1 = await _fileService.SaveFileAsync(model.Photo1, "AboutClinic");
                 }
                 catch(Exception ex) 
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+            }
+            if (model.Photo2 != null)
+            {
+                try
+                {
+                    _fileService.DeleteFile(aboutClinic.PathToPhoto2);
+                    aboutClinic.PathToPhoto2 = await _fileService.SaveFileAsync(model.Photo2, "AboutClinic");
+                }
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex.ToString());
                 }
@@ -80,14 +97,16 @@ namespace BicardBackend.Controllers
         [HttpDelete("Delete")]
         public async Task<IActionResult> Delete(int id)
         {
-            var stats = await _context.AboutClinic.FirstOrDefaultAsync(s => s.Id == id);
-            if (stats == null)
+            var aboutClinic = await _context.AboutClinic.FirstOrDefaultAsync(s => s.Id == id);
+            if (aboutClinic == null)
             {
                 return BadRequest("Not Fount");
             }
-            _context.AboutClinic.Remove(stats);
+            _fileService.DeleteFile(aboutClinic.PathToPhoto1);
+            _fileService.DeleteFile(aboutClinic.PathToPhoto2);
+            _context.AboutClinic.Remove(aboutClinic);
             await _context.SaveChangesAsync();
-            return Ok(stats);
+            return Ok(aboutClinic);
         }
     }
 }
