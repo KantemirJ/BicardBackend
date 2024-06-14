@@ -96,7 +96,7 @@ namespace BicardBackend.Controllers
             return BadRequest("Model state is invalid.");
         }
         [HttpPut("UpdateMedService")]
-        public async Task<IActionResult> UpdateMedService([FromQuery] int id, [FromForm] MedServiceDto dto)
+        public async Task<IActionResult> UpdateMedService(int id, [FromForm] MedServiceDto dto)
         {
             if (ModelState.IsValid)
             {
