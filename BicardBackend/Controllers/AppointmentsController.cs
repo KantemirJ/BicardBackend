@@ -78,6 +78,14 @@ namespace Bicard.Controllers
             var list = await _context.Appointments.Where(a => a.IsConfirmed == false && a.DoctorId == id).ToListAsync();
             return Ok(list);
         }
+        [HttpGet("GetListOfAppointmentsByDoctorUserId")]
+        //[Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetListOfAppointmentsByDoctorUserId(int id)
+        {
+            var doctorId = _context.Doctors.Where(d => d.UserId == id).Select(d => d.Id).FirstOrDefault();
+            var list = await _context.Appointments.Where(a => a.IsConfirmed == false && a.DoctorId == doctorId).ToListAsync();
+            return Ok(list);
+        }
         [HttpGet("GetConfirmedAppointmentsByDoctorId")]
         public async Task<IActionResult> GetconfirmedAppointmentsByDoctorId(int id)
         {
