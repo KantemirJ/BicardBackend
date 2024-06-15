@@ -268,7 +268,7 @@ namespace BicardBackend.Controllers
                 string encodedToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(token))
                                                 .Replace('+', '-')
                                                 .Replace('/', '_');
-                var link = $"http://localhost:3000/confirm-email?userId={user.Id}&token={encodedToken}";
+                var link = $"http://localhost:3000/reset-password?email={user.Email}&token={encodedToken}";
                 var template = await _emailService.ReadTemplateFileAsync("BicardBackend.EmailTemplates.ResetPassword.html");
                 template = template.Replace("[LINK]", link);
                 template = template.Replace("[NUMBER]", "1");
