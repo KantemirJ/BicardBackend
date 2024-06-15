@@ -239,8 +239,11 @@ namespace BicardBackend.Controllers
             {
                 return NotFound("User not found");
             }
+            string decodedToken = Encoding.ASCII.GetString(
+                Convert.FromBase64String(token.Replace('-', '+').Replace('_', '/'))
+            );
 
-            var result = await _userManager.ConfirmEmailAsync(user, token);
+            var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
             if (result.Succeeded)
             {
                 return Ok("Email confirmation successful.");
