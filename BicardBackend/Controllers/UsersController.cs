@@ -52,20 +52,24 @@ namespace BicardBackend.Controllers
                 }
                 await _userManager.AddToRoleAsync(user, "Patient");
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                //string encodedToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(token))
-                //                                .Replace('+', '-')  // Replace '+' with '-' for URL compatibility
-                //                                .Replace('/', '_'); // Replace '/' with '_' for URL compatibility
-
-                Random rnd = new Random();
-                int number = rnd.Next(100000, 1000000);
-                var code = number.ToString("D6");
+                string encodedToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(token))
+                                                .Replace('+', '-')  
+                                                .Replace('/', '_');
+                var link = $"https://localhost:3000/confirm-email?userId={user.Id}&token={encodedToken}";
                 var template = await _emailService.ReadTemplateFileAsync("BicardBackend.EmailTemplates.ConfirmEmail.html");
-                template = template.Replace("[CODE]", code);
+                template = template.Replace("[CONFIRMATION_LINK]", link);
                 template = template.Replace("[NUMBER]", "1");
                 template = template.Replace("[NAME]", user.UserName);
+                //Random rnd = new Random();
+                //int number = rnd.Next(100000, 1000000);
+                //var code = number.ToString("D6");
+                //var template = await _emailService.ReadTemplateFileAsync("BicardBackend.EmailTemplates.ConfirmEmail.html");
+                //template = template.Replace("[CODE]", code);
+                //template = template.Replace("[NUMBER]", "1");
+                //template = template.Replace("[NAME]", user.UserName);
 
                 //_emailService.Send(model.Email, "Подтвердите Ваш электронный адрес", template);
-                return Ok(new { ConfirmationToken = token, code, user.Id });
+                return Ok();
             }
 
             return BadRequest(new { result.Errors });
@@ -78,16 +82,24 @@ namespace BicardBackend.Controllers
             if (user != null)
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                Random rnd = new Random();
-                int number = rnd.Next(100000, 1000000);
-                var code = number.ToString("D6");
+                string encodedToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(token))
+                                               .Replace('+', '-')
+                                               .Replace('/', '_');
+                var link = $"https://localhost:3000/confirm-email?userId={user.Id}&token={encodedToken}";
                 var template = await _emailService.ReadTemplateFileAsync("BicardBackend.EmailTemplates.ConfirmEmail.html");
-                template = template.Replace("[CODE]", code);
+                template = template.Replace("[CONFIRMATION_LINK]", link);
                 template = template.Replace("[NUMBER]", "1");
                 template = template.Replace("[NAME]", user.UserName);
+                //Random rnd = new Random();
+                //int number = rnd.Next(100000, 1000000);
+                //var code = number.ToString("D6");
+                //var template = await _emailService.ReadTemplateFileAsync("BicardBackend.EmailTemplates.ConfirmEmail.html");
+                //template = template.Replace("[CODE]", code);
+                //template = template.Replace("[NUMBER]", "1");
+                //template = template.Replace("[NAME]", user.UserName);
 
-                //_emailService.Send(email, "Подтвердите Ваш электронный адрес", template);
-                return Ok(new { ConfirmationToken = token, code, user.Id });
+                _emailService.Send(email, "Подтвердите Ваш электронный адрес", template);
+                return Ok();
             }
 
             return BadRequest("Invalid email address");
