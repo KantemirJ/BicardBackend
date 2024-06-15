@@ -20,6 +20,8 @@ namespace BicardBackend.Controllers
     public class DoctorsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
+        private readonly RoleManager<Role> _roleManager;
         //private readonly IMapper _mapper;
         private readonly IFileService _fileService;
         private static readonly Dictionary<DayOfWeek, string> DayOfWeekNamesRu =
@@ -33,11 +35,12 @@ namespace BicardBackend.Controllers
               { DayOfWeek.Friday, "Пятница" },
               { DayOfWeek.Saturday, "Суббота" },
             };
-        public DoctorsController(ApplicationDbContext context, IMapper mapper, IFileService fileService) 
+        public DoctorsController(ApplicationDbContext context, IMapper mapper, IFileService fileService, UserManager<User> userManager, RoleManager<Role> roleManager) 
         {
             _context = context;
-            //_mapper = mapper;
+            _userManager = userManager;
             _fileService = fileService;
+            _roleManager = roleManager;
         }
         [HttpGet("GetListOfDoctors")]
         public async Task<IActionResult> GetListOfDoctors()
@@ -91,7 +94,28 @@ namespace BicardBackend.Controllers
             {
                 return BadRequest("Invalid data");
             }
-            //var doctor = _mapper.Map<Doctor>(doctorDto);
+            var user = await _userManager.FindByIdAsync(doctorDto.UserId.ToString());
+            if (user == null)
+            {
+                return BadRequest("User not found");
+            }
+            var roleExists = await _roleManager.RoleExistsAsync("Doctor");
+            if (!roleExists)
+            {
+                var role = new Role("Doctor");
+                await _roleManager.CreateAsync(role);
+            }
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            if (currentRoles != null)
+            {
+                await _userManager.RemoveFromRolesAsync(user, currentRoles.ToArray());
+                await _userManager.AddToRoleAsync(user, "Doctor");
+            }
+            else
+            {
+                await _userManager.AddToRoleAsync(user, "Doctor");
+            }
+            
             Doctor doctor = new() 
             {
                 Name = doctorDto.Name,
