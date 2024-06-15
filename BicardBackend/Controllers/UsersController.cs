@@ -269,7 +269,7 @@ namespace BicardBackend.Controllers
                                                 .Replace('+', '-')
                                                 .Replace('/', '_');
                 var link = $"http://localhost:3000/confirm-email?userId={user.Id}&token={encodedToken}";
-                var template = await _emailService.ReadTemplateFileAsync("BicardBackend.EmailTemplates.ConfirmEmail.html");
+                var template = await _emailService.ReadTemplateFileAsync("BicardBackend.EmailTemplates.ResetPassword.html");
                 template = template.Replace("[LINK]", link);
                 template = template.Replace("[NUMBER]", "1");
                 template = template.Replace("[NAME]", user.UserName);
