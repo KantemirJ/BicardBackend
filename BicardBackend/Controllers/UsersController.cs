@@ -55,7 +55,7 @@ namespace BicardBackend.Controllers
                 string encodedToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(token))
                                                 .Replace('+', '-')  
                                                 .Replace('/', '_');
-                var link = $"https://localhost:3000/confirm-email?userId={user.Id}&token={encodedToken}";
+                var link = $"http://localhost:3000/confirm-email?userId={user.Id}&token={encodedToken}";
                 var template = await _emailService.ReadTemplateFileAsync("BicardBackend.EmailTemplates.ConfirmEmail.html");
                 template = template.Replace("[CONFIRMATION_LINK]", link);
                 template = template.Replace("[NUMBER]", "1");
@@ -68,7 +68,7 @@ namespace BicardBackend.Controllers
                 //template = template.Replace("[NUMBER]", "1");
                 //template = template.Replace("[NAME]", user.UserName);
 
-                //_emailService.Send(model.Email, "Подтвердите Ваш электронный адрес", template);
+                _emailService.Send(model.Email, "Подтвердите Ваш электронный адрес", template);
                 return Ok();
             }
 
@@ -85,7 +85,7 @@ namespace BicardBackend.Controllers
                 string encodedToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(token))
                                                .Replace('+', '-')
                                                .Replace('/', '_');
-                var link = $"https://localhost:3000/confirm-email?userId={user.Id}&token={encodedToken}";
+                var link = $"http://localhost:3000/confirm-email?userId={user.Id}&token={encodedToken}";
                 var template = await _emailService.ReadTemplateFileAsync("BicardBackend.EmailTemplates.ConfirmEmail.html");
                 template = template.Replace("[CONFIRMATION_LINK]", link);
                 template = template.Replace("[NUMBER]", "1");
@@ -114,7 +114,7 @@ namespace BicardBackend.Controllers
                 return Unauthorized(new { Message = "Invalid login attempt" });
             }
             var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, false, false);
-
+            
             if (result.Succeeded)
             {
                 var accessToken = _jwtService.GenerateAccessToken(user);
@@ -149,7 +149,7 @@ namespace BicardBackend.Controllers
                 return Unauthorized(new { Message = "Invalid login attempt" });
             }
             var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, false, false);
-
+            var doctor = _context.Doctors.Where(d => d.UserId == user.Id).SingleOrDefault();
             if (result.Succeeded)
             {
                 var accessToken = _jwtService.GenerateAccessToken(user);
@@ -167,6 +167,7 @@ namespace BicardBackend.Controllers
                 {
                     userId = user.Id,
                     roleName,
+                    DoctorId = doctor?.Id,
                     userName = user.UserName,
                     accessToken = accessToken.Result,
                     Message = "Login successful"
@@ -264,16 +265,24 @@ namespace BicardBackend.Controllers
             try
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                Random rnd = new Random();
-                int number = rnd.Next(100000, 1000000);
-                var code = number.ToString("D6");
-                var template = await _emailService.ReadTemplateFileAsync("BicardBackend.EmailTemplates.ResetPassword.html");
-                template = template.Replace("[CODE]", code);
-                template = template.Replace("[HOURS]", "1");
+                string encodedToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(token))
+                                                .Replace('+', '-')
+                                                .Replace('/', '_');
+                var link = $"http://localhost:3000/confirm-email?userId={user.Id}&token={encodedToken}";
+                var template = await _emailService.ReadTemplateFileAsync("BicardBackend.EmailTemplates.ConfirmEmail.html");
+                template = template.Replace("[LINK]", link);
+                template = template.Replace("[NUMBER]", "1");
                 template = template.Replace("[NAME]", user.UserName);
-                //_emailService.Send(email, "Сброс пароля для веб приложения клиники Бикард", template);
+                //Random rnd = new Random();
+                //int number = rnd.Next(100000, 1000000);
+                //var code = number.ToString("D6");
+                //var template = await _emailService.ReadTemplateFileAsync("BicardBackend.EmailTemplates.ResetPassword.html");
+                //template = template.Replace("[CODE]", code);
+                //template = template.Replace("[HOURS]", "1");
+                //template = template.Replace("[NAME]", user.UserName);
+                _emailService.Send(email, "Сброс пароля для веб приложения клиники Бикард", template);
 
-                return Ok(new { PasswordResetToken = token, code, user.Email, Message = "Мы отправили код на вашу почту." });
+                return Ok("Мы отправили письмо на вашу почту.");
             }
             catch (Exception ex)
             {
@@ -297,7 +306,10 @@ namespace BicardBackend.Controllers
 
             try
             {
-                var resetResult = await _userManager.ResetPasswordAsync(user, token, password);
+                string decodedToken = Encoding.ASCII.GetString(
+                    Convert.FromBase64String(token.Replace('-', '+').Replace('_', '/'))
+                );
+                var resetResult = await _userManager.ResetPasswordAsync(user, decodedToken, password);
                 if (!resetResult.Succeeded)
                 {
                     return BadRequest(string.Join(",", resetResult.Errors.Select(e => e.Description)));
