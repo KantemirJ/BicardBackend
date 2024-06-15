@@ -44,6 +44,12 @@ namespace BicardBackend.Controllers
 
             if (result.Succeeded)
             {
+                var roleExists = await _roleManager.RoleExistsAsync("Patient");
+                if (!roleExists)
+                {
+                    var role = new Role("Patient");
+                    await _roleManager.CreateAsync(role);
+                }
                 await _userManager.AddToRoleAsync(user, "Patient");
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 //string encodedToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(token))
@@ -100,24 +106,20 @@ namespace BicardBackend.Controllers
             if (result.Succeeded)
             {
                 var accessToken = _jwtService.GenerateAccessToken(user);
-                
-                var roleIds = await _context.UserRoles
-                    .Where(ur => ur.UserId == user.Id)
-                    .Select(ur => ur.RoleId)
-                    .ToListAsync();
 
-                // Get the role names based on role IDs
-                var roleNames = await _context.Roles
-                    .Where(r => roleIds.Contains(r.Id))
-                    .Select(r => r.Name)
-                    .ToListAsync();
-
-                // For simplicity, assuming the user has only one role (modify as needed)
-                string roleName = roleNames.FirstOrDefault();
+                var roleName = await _context.UserRoles
+                      .Where(ur => ur.UserId == user.Id)
+                      .Join(
+                          _context.Roles,
+                          ur => ur.RoleId,
+                          r => r.Id,
+                          (ur, r) => r.NormalizedName
+                      )
+                      .FirstOrDefaultAsync();
                 return Ok(new
                 {
                     userId = user.Id,
-                    roleName = roleName,
+                    roleName,
                     userName = user.UserName,
                     accessToken = accessToken.Result,
                     Message = "Login successful"
@@ -140,23 +142,19 @@ namespace BicardBackend.Controllers
             {
                 var accessToken = _jwtService.GenerateAccessToken(user);
 
-                var roleIds = await _context.UserRoles
-                    .Where(ur => ur.UserId == user.Id)
-                    .Select(ur => ur.RoleId)
-                    .ToListAsync();
-
-                // Get the role names based on role IDs
-                var roleNames = await _context.Roles
-                    .Where(r => roleIds.Contains(r.Id))
-                    .Select(r => r.Name)
-                    .ToListAsync();
-
-                // For simplicity, assuming the user has only one role (modify as needed)
-                string roleName = roleNames.FirstOrDefault();
+                var roleName = await _context.UserRoles
+                      .Where(ur => ur.UserId == user.Id)
+                      .Join(
+                          _context.Roles,
+                          ur => ur.RoleId,
+                          r => r.Id,
+                          (ur, r) => r.NormalizedName
+                      )
+                      .FirstOrDefaultAsync();
                 return Ok(new
                 {
                     userId = user.Id,
-                    roleName = roleName,
+                    roleName,
                     userName = user.UserName,
                     accessToken = accessToken.Result,
                     Message = "Login successful"
@@ -179,7 +177,6 @@ namespace BicardBackend.Controllers
         [HttpGet("GetUsersByRole")]
         public async Task<IActionResult> GetUsersByRole(string role)
         {
-            // Check if the "Admin" role exists, and create it if not
             if (!await _roleManager.RoleExistsAsync(role))
             {
                 return BadRequest("Role '" + role + "' does not exist.");

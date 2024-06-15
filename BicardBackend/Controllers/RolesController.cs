@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using BicardBackend.Models;
 using BicardBackend.Data;
 using BicardBackend.DTOs;
+using Microsoft.EntityFrameworkCore;
 
 namespace BicardBackend.Controllers
 {
@@ -33,16 +34,14 @@ namespace BicardBackend.Controllers
 
                 if (!roleExists)
                 {
-                    // If the role doesn't exist, you may want to create it
-                    return BadRequest($"Role \"{roleName}\" not found.");
+                    var role = new Role(roleName);
+                    await _roleManager.CreateAsync(role);
                 }
-                //if (roleName == "Doctor")
-                //{
-                //    Doctor doctor = new() { UserId = user.Id};
-                //    _context.Doctors.Add(doctor);
-                //    await _context.SaveChangesAsync();
-                //}
-                // Assign the user to the role
+                bool hasAnyRole = await _context.UserRoles.AnyAsync(ur => ur.UserId == user.Id);
+                if(hasAnyRole)
+                {
+                    return BadRequest("User already has a role.");
+                }
                 await _userManager.AddToRoleAsync(user, roleName);
             }
             return Ok();
@@ -91,7 +90,12 @@ namespace BicardBackend.Controllers
             {
                 return BadRequest("Role name cannot be empty");
             }
+            var roleExists = await _roleManager.RoleExistsAsync(roleName);
 
+            if (roleExists)
+            {
+                return BadRequest("Role already exists.");
+            }
             var role = new Role(roleName);
             var result = await _roleManager.CreateAsync(role);
 
