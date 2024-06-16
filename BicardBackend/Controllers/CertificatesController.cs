@@ -41,7 +41,7 @@ namespace BicardBackend.Controllers
             };
             _context.Certificates.Add(certificate);
             await _context.SaveChangesAsync();
-            return Ok(certificate);
+            return Ok();
         }
         [HttpPut("Update")]
         public async Task<IActionResult> Update([FromForm]CertificateDto model)
