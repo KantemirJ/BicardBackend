@@ -228,7 +228,7 @@ namespace BicardBackend.Controllers
             return Ok();
         }
         [HttpGet("ConfirmEmail")]
-        public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
+        public async Task<IActionResult> ConfirmEmail(string userId,  string token)
         {
             if (userId == null || token == null)
             {
