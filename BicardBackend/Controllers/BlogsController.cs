@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Numerics;
 using System.Security.Claims;
 
@@ -58,7 +59,24 @@ namespace BicardBackend.Controllers
         public async Task<IActionResult> Get(int id)
         {
             var blog = await _context.Blogs.FindAsync(id);
-            return Ok(blog);
+            if (blog == null)
+            {
+                return BadRequest("Not Found.");
+            }
+            var preNextIds = await GetPreviousNextBlogIds(id);
+            return Ok( 
+                new
+                {
+                    previosId = preNextIds.Item1,
+                    blog.Id,
+                    blog.Title,
+                    blog.Text,
+                    blog.AuthorId,
+                    blog.Timestamp,
+                    blog.PhotoPath,
+                    nextId = preNextIds.Item2
+                }
+            );
         }
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromForm] BlogDto dto)
@@ -115,6 +133,30 @@ namespace BicardBackend.Controllers
             _context.Blogs.Remove(blog);
             await _context.SaveChangesAsync();
             return Ok(blog);
+        }
+        private async Task<Tuple<int?, int?>> GetPreviousNextBlogIds(int id)
+        {
+            var blogIds = await _context.Blogs
+                .OrderBy(b => b.Id)
+                .Select(b => b.Id) // Select only Id property
+                .ToListAsync();
+
+            int currentIndex = blogIds.IndexOf(id);
+
+            int? previousId = null;
+            int? nextId = null;
+
+            if (currentIndex > 0)
+            {
+                previousId = blogIds[currentIndex - 1];
+            }
+
+            if (currentIndex < blogIds.Count - 1)
+            {
+                nextId = blogIds[currentIndex + 1];
+            }
+
+            return new Tuple<int?, int?>(previousId, nextId);
         }
     }
 }
